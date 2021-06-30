@@ -30,7 +30,6 @@ def create_masks(inp, tar):
 
     return enc_padding_mask, combined_mask, dec_padding_mask
 
-enc_padding_mask, look_ahead_mask, dec_padding_mask = create_masks(index_inputs, index_outputs)
 
 def get_angles(pos, i, d_model):
     angle_rates = 1 / np.power(10000, (2 * i//2) / np.float32(d_model))

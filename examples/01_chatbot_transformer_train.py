@@ -32,6 +32,8 @@ index_inputs, input_seq_len = enc_processing(inputs, char2idx, tokenize_as_morph
 index_outputs, output_seq_len = dec_output_processing(outputs, char2idx, tokenize_as_morph=False)
 index_targets = dec_target_processing(outputs, char2idx, tokenize_as_morph=False)
 
+enc_padding_mask, look_ahead_mask, dec_padding_mask = create_masks(index_inputs, index_outputs)
+
 data_configs = {}
 data_configs['char2idx'] = char2idx
 data_configs['idx2char'] = idx2char

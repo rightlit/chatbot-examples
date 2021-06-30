@@ -39,11 +39,48 @@ def accuracy(real, pred):
 
     return tf.reduce_mean(acc)
 
+
+DATA_IN_PATH = './'
+DATA_OUT_PATH = './'
+TRAIN_INPUTS = 'train_inputs.npy'
+TRAIN_OUTPUTS = 'train_outputs.npy'
+TRAIN_TARGETS = 'train_targets.npy'
+DATA_CONFIGS = 'data_configs.json'
+
+SEED_NUM = 1234
+tf.random.set_seed(SEED_NUM)
+
+index_inputs = np.load(open(DATA_IN_PATH + TRAIN_INPUTS, 'rb'))
+index_outputs = np.load(open(DATA_IN_PATH + TRAIN_OUTPUTS , 'rb'))
+index_targets = np.load(open(DATA_IN_PATH + TRAIN_TARGETS , 'rb'))
+prepro_configs = json.load(open(DATA_IN_PATH + DATA_CONFIGS, 'r'))
+
+char2idx = prepro_configs['char2idx']
+end_index = prepro_configs['end_symbol']
+model_name = 'transformer'
+vocab_size = prepro_configs['vocab_size']
+BATCH_SIZE = 2
+MAX_SEQUENCE = 25
+EPOCHS = 30
+VALID_SPLIT = 0.1
+
+kargs = {'model_name': model_name,
+         'num_layers': 2,
+         'd_model': 512,
+         'num_heads': 8,
+         'dff': 2048,
+         'input_vocab_size': vocab_size,
+         'target_vocab_size': vocab_size,
+         'maximum_position_encoding': MAX_SEQUENCE,
+         'end_token_idx': char2idx[end_index],
+         'rate': 0.1
+        }
+
 model = Transformer(**kargs)
 model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
               loss=loss,
               metrics=[accuracy])
-
+              
 # 모델 불러오기
 DATA_OUT_PATH = './'
 SAVE_FILE_NM = 'transformer_weights.h5'

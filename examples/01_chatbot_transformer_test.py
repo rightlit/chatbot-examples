@@ -80,11 +80,24 @@ model = Transformer(**kargs)
 model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
               loss=loss,
               metrics=[accuracy])
-              
+
+#STD_INDEX = vocab_size
+checkpoint_path = './transformer_weights.h5'
+earlystop_callback = EarlyStopping(monitor='val_accuracy', min_delta=0.0001, patience=10)
+cp_callback = ModelCheckpoint(
+    checkpoint_path, monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=True)
+
 # 모델 불러오기
 DATA_OUT_PATH = './'
 SAVE_FILE_NM = 'transformer_weights.h5'
 
+history = model.fit([index_inputs, index_outputs], index_targets, 
+                    batch_size=BATCH_SIZE, epochs=1,
+                    validation_split=VALID_SPLIT, callbacks=[earlystop_callback, cp_callback])
+
+#model.train_on_batch([index_inputs, index_outputs], index_targets)
+
+#model.built = True
 #model.load_weights(os.path.join(DATA_OUT_PATH, model_name, SAVE_FILE_NM))
 model.load_weights(os.path.join(DATA_OUT_PATH, SAVE_FILE_NM))
 
@@ -95,5 +108,6 @@ text = "남자친구 승진 선물로 뭐가 좋을까?"
 test_index_inputs, _ = enc_processing([text], char2idx)
 outputs = model.inference(test_index_inputs)
 
+print('output:')
 print(' '.join([idx2char[str(o)] for o in outputs]))
 

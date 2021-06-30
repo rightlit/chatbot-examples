@@ -138,8 +138,9 @@ else:
     print("{} -- Folder create complete \n".format(checkpoint_dir))
     
 
-cp_callback = ModelCheckpoint(
-    checkpoint_path, monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=True)
+#cp_callback = ModelCheckpoint(checkpoint_path, monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=True)
+cp_callback = ModelCheckpoint(checkpoint_path, monitor='val_accuracy', verbose=1, 
+    save_best_only=True, save_weights_only=True)
 
 # 모델 학습
 history = model.fit([index_inputs, index_outputs], index_targets, 

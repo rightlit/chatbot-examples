@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from preprocess import *
 
 # 모델 선언 및 컴파일
 def create_padding_mask(seq):
@@ -266,9 +267,6 @@ class Decoder(tf.keras.layers.Layer):
         return x, attention_weights
 
 # 트랜스포머 모델
-#STD_INDEX = 1
-STD_INDEX = 25
-MAX_SEQUENCE = 25
 class Transformer(tf.keras.Model):
     def __init__(self, **kargs):
         super(Transformer, self).__init__(name=kargs['model_name'])

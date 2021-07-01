@@ -13,7 +13,7 @@
 
 ### 예제 구성
 1. 트랜스포머(transformers)를 이용한 챗봇 
-    - 모델 훈련 : [01_chatbot_transformer_train.py](https://github.com/rightlit/nlp2/blob/main/examples/chatbot_transformer_train.py)
-    - 모델 시험 : [01_chatbot_transformer_test.py](https://github.com/rightlit/nlp2/blob/main/examples/chatbot_transformer_test.py)
+    - 모델 훈련 : [01_chatbot_transformer_train.py](https://github.com/rightlit/nlp2/blob/main/examples/01_chatbot_transformer_train.py)
+    - 모델 시험 : [01_chatbot_transformer_test.py](https://github.com/rightlit/nlp2/blob/main/examples/01_chatbot_transformer_test.py)
 2. BERT 를 이용한 챗봇
 

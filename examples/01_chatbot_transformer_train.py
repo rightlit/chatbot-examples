@@ -18,12 +18,12 @@ import urllib.request
 from transformer import *
 
 # Chatbot dataset download
-print('Chatbot_Data dataset downloading...')
-urllib.request.urlretrieve("https://github.com/songys/Chatbot_data/blob/master/ChatbotData%20.csv", filename="ChatbotData.csv")
+#print('Chatbot_Data dataset downloading...')
+#urllib.request.urlretrieve("https://github.com/songys/Chatbot_data/blob/master/ChatbotData%20.csv", filename="ChatbotData.csv")
 #print('download completed')
 
-PATH = '/content/ChatBotData.csv_short'
-#PATH = './ChatbotData.csv'
+#PATH = '/content/ChatBotData.csv_short'
+PATH = './ChatbotData.csv'
 VOCAB_PATH = './vocabulary.txt'
 
 inputs, outputs = load_data(PATH)
@@ -74,7 +74,8 @@ char2idx = prepro_configs['char2idx']
 end_index = prepro_configs['end_symbol']
 model_name = 'transformer'
 vocab_size = prepro_configs['vocab_size']
-BATCH_SIZE = 2
+#BATCH_SIZE = 2
+BATCH_SIZE = 64
 MAX_SEQUENCE = 25
 EPOCHS = 30
 VALID_SPLIT = 0.1
@@ -146,3 +147,4 @@ cp_callback = ModelCheckpoint(checkpoint_path, monitor='val_accuracy', verbose=1
 history = model.fit([index_inputs, index_outputs], index_targets, 
                     batch_size=BATCH_SIZE, epochs=EPOCHS,
                     validation_split=VALID_SPLIT, callbacks=[earlystop_callback, cp_callback])
+                    

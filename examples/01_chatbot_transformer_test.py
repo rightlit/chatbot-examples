@@ -16,6 +16,7 @@ from preprocess import *
 import urllib.request
 
 from transformer import *
+#from transformer import Transformer
 
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
     from_logits=True, reduction='none')
@@ -59,7 +60,8 @@ char2idx = prepro_configs['char2idx']
 end_index = prepro_configs['end_symbol']
 model_name = 'transformer'
 vocab_size = prepro_configs['vocab_size']
-BATCH_SIZE = 2
+#BATCH_SIZE = 2
+BATCH_SIZE = 64
 MAX_SEQUENCE = 25
 EPOCHS = 30
 VALID_SPLIT = 0.1
@@ -81,15 +83,25 @@ model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
               loss=loss,
               metrics=[accuracy])
 
-# 모델 불러오기
-DATA_OUT_PATH = './'
-SAVE_FILE_NM = 'transformer_weights.h5'
+checkpoint_path = './transformer_weights.h5.tmp'
+earlystop_callback = EarlyStopping(monitor='val_accuracy', min_delta=0.0001, patience=10)
+cp_callback = ModelCheckpoint(checkpoint_path, monitor='val_accuracy', verbose=1, 
+    save_best_only=True, save_weights_only=True)
 
 #history = model.fit([index_inputs, index_outputs], index_targets, 
 #                    batch_size=BATCH_SIZE, epochs=1,
 #                    validation_split=VALID_SPLIT, callbacks=[earlystop_callback, cp_callback])
 
-model.train_on_batch([index_inputs, index_outputs], index_targets)
+# need training for sample
+sample_inputs = index_inputs[:10,:]
+sample_outputs = index_outputs[:10,:]
+sample_targets = index_targets[:10,:]
+model.train_on_batch([sample_inputs, sample_outputs], sample_targets)
+
+# 모델 불러오기
+DATA_OUT_PATH = './'
+SAVE_FILE_NM = 'transformer_weights.h5'
+
 
 #model.built = True
 #model.load_weights(os.path.join(DATA_OUT_PATH, model_name, SAVE_FILE_NM))

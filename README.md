@@ -19,7 +19,6 @@
 2. GPT2를 이용한 챗봇 
     - 모델 훈련 : [02_chatbot_kogpt2_train.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_train.py)
     - 모델 시험 : [02_chatbot_kogpt2_test.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_test.py)
-     
 11. 트랜스포머(transformers)를 이용한 챗봇 
     - 모델 훈련 : [11_chatbot_transformer_train.py](https://github.com/rightlit/nlp2/blob/main/examples/11_chatbot_transformer_train.py)
     - 모델 시험 : [11_chatbot_transformer_test.py](https://github.com/rightlit/nlp2/blob/main/examples/11_chatbot_transformer_test.py)

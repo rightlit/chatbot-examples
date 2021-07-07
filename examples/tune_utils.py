@@ -7,11 +7,12 @@ from tensorflow.python.ops import nccl_ops
 from gensim.models import Word2Vec
 from collections import defaultdict
 from scipy.stats import truncnorm
-import sentencepiece as spm
+#import sentencepiece as spm
 
 sys.path.append('models')
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from preprocess import get_tokenizer, post_processing
+#from preprocess import get_tokenizer, post_processing
+from supervised_nlputils import get_tokenizer, post_processing
 from bilm import Batcher, BidirectionalLanguageModel, weight_layers
 from bert.modeling import BertModel, BertConfig
 from bert.optimization import create_optimizer

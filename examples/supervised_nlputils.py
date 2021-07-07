@@ -1,6 +1,7 @@
 import sys, re, argparse
 #from khaiii import KhaiiiApi
-from konlpy.tag import Okt, Komoran, Mecab, Hannanum, Kkma
+#from konlpy.tag import Okt, Komoran, Mecab, Hannanum, Kkma
+from konlpy.tag import Okt, Komoran, Hannanum, Kkma
 
 
 def get_tokenizer(tokenizer_name):
@@ -8,16 +9,12 @@ def get_tokenizer(tokenizer_name):
         tokenizer = Komoran()
     elif tokenizer_name == "okt":
         tokenizer = Okt()
-    elif tokenizer_name == "mecab":
-        tokenizer = Mecab()
     elif tokenizer_name == "hannanum":
         tokenizer = Hannanum()
     elif tokenizer_name == "kkma":
         tokenizer = Kkma()
-    elif tokenizer_name == "khaiii":
-        tokenizer = KhaiiiApi()
     else:
-        tokenizer = Mecab()
+        tokenizer = Okt()
     return tokenizer
 
 

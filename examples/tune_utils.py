@@ -16,137 +16,7 @@ from bilm import Batcher, BidirectionalLanguageModel, weight_layers
 from bert.modeling import BertModel, BertConfig
 from bert.optimization import create_optimizer
 from bert.tokenization import FullTokenizer, convert_to_unicode
-from xlnet.modeling import classification_loss
-from xlnet.xlnet import XLNetConfig, RunConfig, XLNetModel
-from xlnet.prepro_utils import preprocess_text, encode_pieces, encode_ids
-from xlnet.model_utils import AdamWeightDecayOptimizer
 
-
-def make_xlnet_graph(input_ids, input_mask, segment_ids, label_ids, model_config_path,
-                     num_labels, is_training_placeholder, tune=False):
-    xlnet_config = XLNetConfig(json_path=model_config_path)
-    # 모두 기본값으로 세팅
-    kwargs = dict(
-        is_training=is_training_placeholder,
-        use_tpu=False,
-        use_bfloat16=False,
-        dropout=0.1,
-        dropatt=0.1,
-        init="normal",
-        init_range=0.1,
-        init_std=0.1,
-        clamp_len=-1)
-    run_config = RunConfig(**kwargs)
-    xlnet_model = XLNetModel(
-        xlnet_config=xlnet_config,
-        run_config=run_config,
-        input_ids=input_ids,
-        seg_ids=segment_ids,
-        input_mask=input_mask)
-    # summary_type="last", 마지막 레이어 히든 벡터 시퀀스의 마지막 벡터
-    # summary_type="first", 마지막 레이어 히든 벡터 시퀀스의 첫번째 벡터
-    # summary_type="mean", 마지막 레이어 히든 벡터 시퀀스의 평균 벡터
-    # summary_type="attn", 마지막 레이어 히든 벡터 시퀀스에 멀티 헤드 어텐션 적용
-    # use_proj=True, 이미 만든 summary 벡터에 선형변환 + tanh 적용 (BERT와 동일)
-    # use_proj=False, 이미 만든 summary 벡터를 그대로 리턴
-    summary = xlnet_model.get_pooled_out(summary_type="last", use_summ_proj=True)
-    # summary 벡터에 활성함수(act_fn) 없이 선형변환 후 cross entropy loss 구함
-    per_example_loss, logits = classification_loss(
-        hidden=summary,
-        labels=label_ids,
-        n_class=num_labels,
-        initializer=xlnet_model.get_initializer(),
-        scope="classification_layer",
-        return_logits=True)
-    if tune:
-        # loss layer
-        total_loss = tf.reduce_mean(per_example_loss)
-        return logits, total_loss
-    else:
-        # prob Layer
-        probs = tf.nn.softmax(logits, axis=-1, name='probs')
-        return probs
-
-
-def make_elmo_graph(options_fname, pretrain_model_fname, max_characters_per_token, num_labels, tune=False):
-    """
-        ids_placeholder : ELMo 네트워크의 입력값 (ids)
-            - shape : [batch_size, unroll_steps, max_character_byte_length]
-        elmo_embeddings : fine tuning 네트워크의 입력값 (ELMo 네트워크의 출력값)
-            - shape : [batch_size, unroll_steps, dimension]
-        labels_placeholder : fine tuning 네트워크의 출력값 (예 : 긍정=1/부정=0)
-            - shape : [batch_size]
-        loss : fine tuning 네트워크의 loss
-    """
-    # Build the biLM graph.
-    # Load pretrained ELMo model.
-    bilm = BidirectionalLanguageModel(options_fname, pretrain_model_fname)
-    # Input placeholders to the biLM.
-    ids_placeholder = tf.placeholder(tf.int32, shape=(None, None, max_characters_per_token), name='input')
-    if tune:
-        # Output placeholders to the fine-tuned Net.
-        labels_placeholder = tf.placeholder(tf.int32, shape=(None))
-    else:
-        labels_placeholder = None
-    # Get ops to compute the LM embeddings.
-    embeddings_op = bilm(ids_placeholder)
-    # Get lengths.
-    input_lengths = embeddings_op['lengths']
-    # define dropout
-    if tune:
-        dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
-    else:
-        dropout_keep_prob = tf.constant(1.0, dtype=tf.float32)
-    # the ELMo layer
-    # shape : [batch_size, unroll_steps, dimension]
-    elmo_embeddings = weight_layers("elmo_embeddings",
-                                    embeddings_op,
-                                    l2_coef=0.0,
-                                    use_top_only=False,
-                                    do_layer_norm=True)
-    # input of fine tuning network
-    features = tf.nn.dropout(elmo_embeddings['weighted_op'], dropout_keep_prob)
-    # Bidirectional LSTM Layer
-    lstm_cell_fw = tf.nn.rnn_cell.LSTMCell(num_units=512,
-                                           cell_clip=5,
-                                           proj_clip=5)
-    lstm_cell_bw = tf.nn.rnn_cell.LSTMCell(num_units=512,
-                                           cell_clip=5,
-                                           proj_clip=5)
-    lstm_output, _ = tf.nn.bidirectional_dynamic_rnn(cell_fw=lstm_cell_fw,
-                                                     cell_bw=lstm_cell_bw,
-                                                     inputs=features,
-                                                     sequence_length=input_lengths,
-                                                     dtype=tf.float32)
-
-    # Attention Layer
-    output_fw, output_bw = lstm_output
-    H = tf.contrib.layers.fully_connected(inputs=output_fw + output_bw, num_outputs=256, activation_fn=tf.nn.tanh)
-    attention_score = tf.nn.softmax(tf.contrib.layers.fully_connected(inputs=H, num_outputs=1, activation_fn=None), axis=1)
-    attention_output = tf.squeeze(tf.matmul(tf.transpose(H, perm=[0, 2, 1]), attention_score), axis=-1)
-    layer_output = tf.nn.dropout(attention_output, dropout_keep_prob)
-
-    # Feed-Forward Layer
-    fc = tf.contrib.layers.fully_connected(inputs=layer_output,
-                                           num_outputs=512,
-                                           activation_fn=tf.nn.relu,
-                                           weights_initializer=tf.contrib.layers.xavier_initializer(),
-                                           biases_initializer=tf.zeros_initializer())
-    features_drop = tf.nn.dropout(fc, dropout_keep_prob)
-    logits = tf.contrib.layers.fully_connected(inputs=features_drop,
-                                               num_outputs=num_labels,
-                                               activation_fn=None,
-                                               weights_initializer=tf.contrib.layers.xavier_initializer(),
-                                               biases_initializer=tf.zeros_initializer())
-    if tune:
-        # Loss Layer
-        CE = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels_placeholder, logits=logits)
-        loss = tf.reduce_mean(CE)
-        return ids_placeholder, labels_placeholder, dropout_keep_prob, logits, loss
-    else:
-        # prob Layer
-        probs = tf.nn.softmax(logits, axis=-1, name='probs')
-        return ids_placeholder, elmo_embeddings, probs
 
 
 def make_bert_graph(bert_config, max_seq_length, dropout_keep_prob_rate, num_labels, tune=False):
@@ -425,69 +295,6 @@ class Tuner(object):
         raise NotImplementedError
 
 
-class ELMoTuner(Tuner):
-
-    def __init__(self, train_corpus_fname, test_corpus_fname,
-                 vocab_fname, options_fname, pretrain_model_fname,
-                 model_save_path, max_characters_per_token=30,
-                 batch_size=32, num_labels=2):
-        # Load a corpus.
-        super().__init__(train_corpus_fname=train_corpus_fname,
-                         tokenized_train_corpus_fname=train_corpus_fname + ".elmo-tokenized",
-                         test_corpus_fname=test_corpus_fname,
-                         tokenized_test_corpus_fname=test_corpus_fname + ".elmo-tokenized",
-                         model_name="elmo", vocab_fname=vocab_fname,
-                         model_save_path=model_save_path, batch_size=batch_size)
-        # configurations
-        self.options_fname = options_fname
-        self.pretrain_model_fname = pretrain_model_fname
-        self.max_characters_per_token = max_characters_per_token
-        self.num_labels = 2 # positive, negative
-        self.num_train_steps = (int((len(self.train_data) - 1) / self.batch_size) + 1) * self.num_epochs
-        self.eval_every = int(self.num_train_steps / self.num_epochs)  # epoch마다 평가
-        # Create a Batcher to map text to character ids.
-        # lm_vocab_file = ELMo는 token vocab이 없어도 on-the-fly로 입력 id들을 만들 수 있다
-        # 하지만 자주 나오는 char sequence, 즉 vocab을 미리 id로 만들어 놓으면 좀 더 빠른 학습이 가능
-        # max_token_length = the maximum number of characters in each token
-        self.batcher = Batcher(lm_vocab_file=vocab_fname, max_token_length=self.max_characters_per_token)
-        self.training = tf.placeholder(tf.bool)
-        # build train graph
-        self.ids_placeholder, self.labels_placeholder, self.dropout_keep_prob, self.logits, self.loss = make_elmo_graph(options_fname,
-                                                                                                                        pretrain_model_fname,
-                                                                                                                        max_characters_per_token,
-                                                                                                                        num_labels, tune=True)
-
-    def tune(self):
-        global_step = tf.train.get_or_create_global_step()
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
-        grads_and_vars = optimizer.compute_gradients(self.loss)
-        train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
-        output_feed = [train_op, global_step, self.logits, self.loss]
-        saver = tf.train.Saver(max_to_keep=1)
-        sess = tf.Session()
-        sess.run(tf.global_variables_initializer())
-        self.train(sess, saver, global_step, output_feed)
-
-    def make_input(self, sentences, labels, is_training):
-        current_input = self.batcher.batch_sentences(sentences)
-        current_output = np.array(labels)
-        if is_training:
-            input_feed = {
-                self.ids_placeholder: current_input,
-                self.labels_placeholder: current_output,
-                self.dropout_keep_prob: self.dropout_keep_prob_rate,
-                self.training: True
-            }
-        else:
-            input_feed_ = {
-                self.ids_placeholder: current_input,
-                self.labels_placeholder: current_output,
-                self.dropout_keep_prob: 1.0,
-                self.training: False
-            }
-            input_feed = [input_feed_, current_output]
-        return input_feed
-
 
 class BERTTuner(Tuner):
 
@@ -569,131 +376,6 @@ class BERTTuner(Tuner):
         return input_feed
 
 
-class XLNetTuner(Tuner):
-
-    def __init__(self, train_corpus_fname, test_corpus_fname,
-                 pretrain_model_fname, config_fname, model_save_path,
-                 sp_model_path, max_seq_length=64, warmup_steps=1000, decay_method="poly",
-                 min_lr_ratio=0.0, adam_epsilon=1e-8, num_gpus=1, weight_decay=0.00,
-                 batch_size=128, learning_rate=3e-5, clip=1.0, num_labels=2):
-        # configurations
-        self.pretrain_model_fname = pretrain_model_fname
-        self.max_seq_length = max_seq_length
-        self.batch_size = batch_size * num_gpus
-        self.learning_rate = learning_rate
-        self.warmup_steps = warmup_steps
-        self.decay_method = decay_method
-        self.min_lr_ratio = min_lr_ratio
-        self.weight_decay = weight_decay
-        self.adam_epsilon = adam_epsilon
-        self.clip = clip
-        self.num_labels = num_labels
-        self.SEG_ID_A = 0
-        self.SEG_ID_CLS = 2
-        self.SEG_ID_PAD = 4
-        self.CLS_ID = 3
-        self.SEP_ID = 4
-        self.training = tf.placeholder(tf.bool)
-        self.num_gpus = num_gpus
-        self.config_fname = config_fname
-        self.max_seq_length = max_seq_length
-        # define placeholders
-        self.is_training = tf.placeholder(tf.bool)
-        self.input_ids = tf.placeholder(tf.int32, [max_seq_length, batch_size * num_gpus], name='inputs_ids')
-        self.input_ids_list = tf.split(self.input_ids, num_gpus, axis=1)
-        self.input_mask = tf.placeholder(tf.float32, [max_seq_length, batch_size * num_gpus], name='input_mask')
-        self.input_mask_list = tf.split(self.input_mask, num_gpus, axis=1)
-        self.segment_ids = tf.placeholder(tf.int32, [max_seq_length, batch_size * num_gpus], name='segment_ids')
-        self.segment_ids_list = tf.split(self.segment_ids, num_gpus, axis=1)
-        self.label_ids = tf.placeholder(tf.int32, [batch_size * num_gpus], name='label_ids')
-        self.label_ids_list = tf.split(self.label_ids, num_gpus, axis=0)
-        # Load a corpus.
-        super().__init__(train_corpus_fname=train_corpus_fname,
-                         tokenized_train_corpus_fname=train_corpus_fname + ".xlnet-tokenized",
-                         test_corpus_fname=test_corpus_fname, batch_size=batch_size * num_gpus,
-                         tokenized_test_corpus_fname=test_corpus_fname + ".xlnet-tokenized",
-                         model_name="xlnet", model_save_path=model_save_path,
-                         sp_model_path=sp_model_path)
-        self.train_steps = int(self.train_data_size * self.num_epochs / self.batch_size)
-        self.eval_every = int(self.train_data_size / self.batch_size)  # epoch마다 평가
-
-    def tune(self):
-        with tf.device('/cpu:0'):
-            global_step = tf.train.get_or_create_global_step()
-            all_grads, all_vars, total_loss, total_logits, optimizers = [], [], [], [], []
-            for k in range(self.num_gpus):
-                with tf.device('/gpu:%d' % k), tf.variable_scope('tower%d' % k, reuse=tf.AUTO_REUSE):
-                    optimizer = get_xlnet_optimizer(self.learning_rate, self.warmup_steps, self.decay_method,
-                                                    self.adam_epsilon, self.train_steps, self.min_lr_ratio,
-                                                    self.weight_decay, global_step)
-                    logits, loss = make_xlnet_graph(self.input_ids_list[k], self.input_mask_list[k],
-                                                    self.segment_ids_list[k], self.label_ids_list[k],
-                                                    self.config_fname, self.num_labels,
-                                                    self.is_training, tune=True)
-                    grads_and_vars = optimizer.compute_gradients(loss)
-                    gradients, variables = zip(*[el for el in grads_and_vars if el[0] is not None])
-                    clipped, _ = tf.clip_by_global_norm(gradients, self.clip)
-                    all_vars.append(variables)
-                    all_grads.append(clipped)
-                    optimizers.append(optimizer)
-                    total_loss.append(loss)
-                    total_logits.append(logits)
-            self.logits = tf.concat(total_logits, axis=0)
-            self.loss = tf.reduce_sum(total_loss)
-            average_grads = allreduce_grads(all_grads, average=False)
-            merged_grads_and_vars = merge_grad_list(average_grads, all_vars)
-            train_ops = []
-            for idx, grads_and_vars in enumerate(merged_grads_and_vars):
-                with tf.name_scope('apply_gradients'), tf.device(tf.DeviceSpec(device_type="GPU", device_index=idx)):
-                    train_ops.append(optimizers[idx].apply_gradients(grads_and_vars, global_step=global_step,
-                                                                     name='apply_grad_{}'.format(idx)))
-            train_op = tf.group(*train_ops, name='train_op')
-            output_feed = [train_op, global_step, self.logits, self.loss]
-            # Manually increment `global_step` for AdamWeightDecayOptimizer
-            if isinstance(optimizers[0], AdamWeightDecayOptimizer):
-                new_global_step = global_step + 1
-                train_op = tf.group(train_op, [global_step.assign(new_global_step)])
-            sess = tf.Session()
-            sess.run(tf.global_variables_initializer())
-            load_pretrained_xlnet_model(self.pretrain_model_fname, self.num_gpus)
-            # 0번 GPU의 param만 저장
-            saver = tf.train.Saver(tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='tower0') + [global_step], max_to_keep=1)
-            self.train(sess, saver, global_step, output_feed)
-
-    def make_input(self, sentences, labels, is_training):
-        features = {'input_ids': [], 'input_mask': [], 'segment_ids': []}
-        for tokens in sentences:
-            # classifier_utils의 convert_single_example 참고
-            truncated_tokens = tokens[:(self.max_seq_length - 2)]
-            input_ids = [self.tokenizer.PieceToId(token) for token in truncated_tokens] + [self.SEP_ID, self.CLS_ID]
-            input_mask = [0] * len(input_ids)
-            segment_ids = [self.SEG_ID_A] * (len(truncated_tokens) + 1) + [self.SEG_ID_CLS]
-            if len(input_ids) < self.max_seq_length:
-                delta_len = self.max_seq_length - len(input_ids)
-                input_ids = [0] * delta_len + input_ids
-                input_mask = [1] * delta_len + input_mask
-                segment_ids = [self.SEG_ID_PAD] * delta_len + segment_ids
-            features['input_ids'].append(input_ids)
-            features['input_mask'].append(input_mask)
-            features['segment_ids'].append(segment_ids)
-        if is_training:
-            input_feed = {
-                self.is_training: is_training,
-                self.input_ids: np.transpose(np.array(features['input_ids'])),
-                self.segment_ids: np.transpose(np.array(features['segment_ids'])),
-                self.input_mask: np.transpose(np.array(features['input_mask'])),
-                self.label_ids: np.array(labels)
-            }
-        else:
-            input_feed_ = {
-                self.is_training: is_training,
-                self.input_ids: np.transpose(np.array(features['input_ids'])),
-                self.segment_ids: np.transpose(np.array(features['segment_ids'])),
-                self.input_mask: np.transpose(np.array(features['input_mask'])),
-                self.label_ids: np.array(labels)
-            }
-            input_feed = [input_feed_, labels]
-        return input_feed
 
 
 class WordEmbeddingTuner(Tuner):
@@ -808,42 +490,6 @@ class WordEmbeddingTuner(Tuner):
         return embeddings, vocab
 
 
-def get_xlnet_optimizer(learning_rate, warmup_steps, decay_method, adam_epsilon,
-                        train_steps, min_lr_ratio, weight_decay, global_step):
-    # increase the learning rate linearly
-    if warmup_steps > 0:
-        warmup_lr = (tf.cast(global_step, tf.float32)
-                     / tf.cast(warmup_steps, tf.float32)
-                     * learning_rate)
-    else:
-        warmup_lr = 0.0
-        # decay the learning rate
-    if decay_method == "poly":
-        decay_lr = tf.train.polynomial_decay(
-            learning_rate,
-            global_step=global_step - warmup_steps,
-            decay_steps=train_steps - warmup_steps,
-            end_learning_rate=learning_rate * min_lr_ratio)
-    elif decay_method == "cos":
-        decay_lr = tf.train.cosine_decay(
-            learning_rate,
-            global_step=global_step - warmup_steps,
-            decay_steps=train_steps - warmup_steps,
-            alpha=min_lr_ratio)
-    else:
-        raise ValueError(decay_method)
-    learning_rate = tf.where(global_step < warmup_steps, warmup_lr, decay_lr)
-    if weight_decay == 0:
-        optimizer = tf.train.AdamOptimizer(
-            learning_rate=learning_rate,
-            epsilon=adam_epsilon)
-    else:
-        optimizer = AdamWeightDecayOptimizer(
-            learning_rate=learning_rate,
-            epsilon=adam_epsilon,
-            exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"],
-            weight_decay_rate=weight_decay)
-    return optimizer
 
 
 def allreduce_grads(all_grads, average):
@@ -921,14 +567,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_labels', type=int, help='number of labels)')
     args = parser.parse_args()
 
-    if args.model_name == "elmo":
-        model = ELMoTuner(train_corpus_fname=args.train_corpus_fname,
-                          test_corpus_fname=args.test_corpus_fname,
-                          vocab_fname=args.vocab_fname,
-                          options_fname=args.config_fname,
-                          pretrain_model_fname=args.pretrain_model_fname,
-                          model_save_path=args.model_save_path)
-    elif args.model_name == "bert":
+    if args.model_name == "bert":
         model = BERTTuner(train_corpus_fname=args.train_corpus_fname,
                           test_corpus_fname=args.test_corpus_fname,
                           vocab_fname=args.vocab_fname,
@@ -936,18 +575,6 @@ if __name__ == '__main__':
                           bertconfig_fname=args.config_fname,
                           model_save_path=args.model_save_path,
                           num_labels=args.num_labels)
-    elif args.model_name == "xlnet":
-        if args.num_gpus is None:
-            num_gpus = 1
-        else:
-            num_gpus = int(args.num_gpus)
-        model = XLNetTuner(train_corpus_fname=args.train_corpus_fname,
-                           test_corpus_fname=args.test_corpus_fname,
-                           pretrain_model_fname=args.pretrain_model_fname,
-                           config_fname=args.config_fname,
-                           model_save_path=args.model_save_path,
-                           sp_model_path=args.vocab_fname,
-                           num_gpus=num_gpus)
     elif args.model_name == "word":
         model = WordEmbeddingTuner(train_corpus_fname=args.train_corpus_fname,
                                    test_corpus_fname=args.test_corpus_fname,

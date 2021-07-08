@@ -557,21 +557,39 @@ def load_pretrained_xlnet_model(pretrained_model_fname, num_gpus):
             assignment_map[name] = name_to_variable['tower' + str(k) + '/' + name]
     tf.train.init_from_checkpoint(pretrained_model_fname, assignment_map)
 
-base_dir = '.'
-pretrained_bert_model = 'multi_cased_L-12_H-768_A-12'
-base_model_path = os.path.join(base_dir, pretrained_bert_model)
-
 model_name = 'bert'
-train_corpus_fname = 'train.txt'
-test_corpus_fname = 'test.txt'
-
-vocab_fname = os.path.join(base_model_path, 'vocab.txt')
-config_fname = os.path.join(base_model_path, 'bert_config.json')
-pretrain_model_fname = os.path.join(base_model_path, 'bert_model.ckpt')
-model_save_path = os.path.join(base_model_path, 'tune-ckpt')
-num_labels = 2
+base_dir = '.'
+pretrained_model_path = 'multi_cased_L-12_H-768_A-12'
+pretrain_model_fname='bert_model.ckpt'
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--train_corpus_fname', type=str, help='train corpus file name', default='')
+    parser.add_argument('--test_corpus_fname', type=str, help='test corpus file name', default='')
+    parser.add_argument('--vocab_fname', type=str, help='vocab file name', default='vocab.txt')
+    parser.add_argument('--pretrain_model_fname', type=str, help='pretrained model file name', default='bert_model.ckpt')
+    parser.add_argument('--config_fname', type=str, help='config file name', default='bert_config.json')
+    parser.add_argument('--pretrained_model_path', type=str, help='pretrained model path', default='multi_cased_L-12_H-768_A-12')
+    parser.add_argument('--model_save_path', type=str, help='model save path', default='')
+    args = parser.parse_args()
+
+    base_model_path = os.path.join(base_dir, pretrained_model_path)
+
+    if(args.train_corpus_fname == ''):
+        train_corpus_fname = 'train.txt.1'
+        #train_corpus_fname = 'train.txt'
+    if(args.test_corpus_fname == ''):
+        test_corpus_fname = 'test.txt.1'
+        #test_corpus_fname = 'test.txt'
+    if(args.model_save_path == ''):
+        model_save_path = os.path.join(base_dir, 'tune-ckpt')
+    else:
+        model_save_path = os.path.join(base_dir, args.model_save_path)
+
+    vocab_fname = os.path.join(base_model_path, 'vocab.txt')
+    config_fname = os.path.join(base_model_path, 'bert_config.json')
+    pretrain_model_fname = os.path.join(base_model_path, 'bert_model.ckpt')
+    num_labels = 2
 
     model = BERTTuner(train_corpus_fname=train_corpus_fname,
                           test_corpus_fname=test_corpus_fname,

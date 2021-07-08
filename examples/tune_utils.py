@@ -166,6 +166,7 @@ class Tuner(object):
         if not os.path.exists(model_save_path):
             os.mkdir(model_save_path)
         self.num_labels = num_labels
+        self.valid_scores = []
 
         # define tokenizer
         if self.model_name == "bert":
@@ -235,6 +236,8 @@ class Tuner(object):
                 checkpoint_loss = 0.0
                 self.validation(sess, saver, global_step)
 
+        print('average valid scores: ', np.mean(self.valid_scores))
+
     def validation(self, sess, saver, global_step):
         valid_loss, valid_pred, valid_num_data = 0, 0, 0
         valid_cnt = 0
@@ -265,6 +268,8 @@ class Tuner(object):
             self.best_valid_score = valid_score
             path = self.model_save_path + "/" + str(valid_score)
             saver.save(sess, path, global_step=global_step)
+
+        self.valid_scores.append(valid_score)
 
     def get_batch(self, data, num_epochs, is_training=True):
         if is_training:

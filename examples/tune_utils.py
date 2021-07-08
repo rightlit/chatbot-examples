@@ -236,6 +236,7 @@ class Tuner(object):
                 checkpoint_loss = 0.0
                 self.validation(sess, saver, global_step)
 
+        print('***** Eval results *****')
         print('average valid scores: {:.4f}', np.average(self.valid_scores))
 
     def validation(self, sess, saver, global_step):

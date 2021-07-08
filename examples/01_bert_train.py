@@ -237,7 +237,7 @@ class Tuner(object):
                 self.validation(sess, saver, global_step)
 
         print('***** Eval results *****')
-        print('average valid scores: {:.4f}', np.average(self.valid_scores))
+        print('average valid scores: {:.4f}'.format(np.average(self.valid_scores)))
 
     def validation(self, sess, saver, global_step):
         valid_loss, valid_pred, valid_num_data = 0, 0, 0

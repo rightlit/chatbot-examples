@@ -14,7 +14,6 @@
 ### 예제 구성
 1. BERT 를 이용한 분류
     - 모델 훈련 : [01_bert_train.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_train.py)
-    - 모델 평가 : [01_bert_eval.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_eval.py)
     - 모델 시험 : [01_bert_test.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_test.py)
 2. GPT2를 이용한 챗봇 
     - 모델 훈련 : [02_chatbot_kogpt2_train.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_train.py)

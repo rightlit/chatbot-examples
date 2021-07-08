@@ -8,6 +8,9 @@ import torch
 from transformers import AdamW
 from torch.utils.data import dataloader
 
+import sys
+sys.path.append('../models')
+
 #from wellness import WellnessTextClassificationDataset
 #from kobert import KoBERTforSequenceClassfication
 from wellness import WellnessAutoRegressiveDataset

@@ -1,6 +1,10 @@
 import os
 import numpy as np
 import torch
+
+import sys
+sys.path.append('../models')
+
 from kogpt2 import DialogKoGPT2
 from kogpt2_transformers import get_kogpt2_tokenizer
 

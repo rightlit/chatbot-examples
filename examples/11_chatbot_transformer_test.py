@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from preprocess import *
 import urllib.request
 
+import sys
+sys.path.append('../models')
 from transformer import *
 #from transformer import Transformer
 

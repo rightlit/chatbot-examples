@@ -6,7 +6,8 @@
 - 데이터셋 : [Chatbot_data(https://github.com/songys/Chatbot_data)](https://github.com/songys/Chatbot_data)
 - 소스 참고 
     - 트랜스포머를 이용한 한국어 챗봇(Transformer Chatbot Tutorial) : [https://wikidocs.net/89786](https://wikidocs.net/89786) <br>
-    - 텐서플로2와 머신러닝으로 시작하는 자연어처리 : [https://github.com/NLP-kr/tensorflow-ml-nlp-tf2](https://github.com/NLP-kr/tensorflow-ml-nlp-tf2) <br>
+    - 텐서플로와 머신러닝으로 시작하는 자연어처리 : [https://github.com/NLP-kr/tensorflow-ml-nlp](https://github.com/NLP-kr/tensorflow-ml-nlp) <br>
+    - 한국어 임베딩 : [https://github.com/ratsgo/embedding](https://github.com/ratsgo/embedding) <br>
     - 심리상담 챗봇 구현하기 : [https://rogerheederer.github.io/ChatBot_Wellness/](https://rogerheederer.github.io/ChatBot_Wellness/) <br>
 
 예제는 아래와 같이 구성되어 있습니다.

@@ -561,6 +561,9 @@ model_name = 'bert'
 base_dir = '.'
 pretrained_model_path = 'multi_cased_L-12_H-768_A-12'
 pretrain_model_fname='bert_model.ckpt'
+train_corpus_fname = 'train.txt'
+test_corpus_fname = 'test.txt'
+model_save_path = 'tune-ckpt'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -575,15 +578,11 @@ if __name__ == '__main__':
 
     base_model_path = os.path.join(base_dir, pretrained_model_path)
 
-    if(args.train_corpus_fname == ''):
-        train_corpus_fname = 'train.txt.1'
-        #train_corpus_fname = 'train.txt'
-    if(args.test_corpus_fname == ''):
-        test_corpus_fname = 'test.txt.1'
-        #test_corpus_fname = 'test.txt'
-    if(args.model_save_path == ''):
-        model_save_path = os.path.join(base_dir, 'tune-ckpt')
-    else:
+    if(args.train_corpus_fname != ''):
+        train_corpus_fname = args.train_corpus_fname
+    if(args.test_corpus_fname != ''):
+        test_corpus_fname = args.test_corpus_fname
+    if(args.model_save_path != ''):
         model_save_path = os.path.join(base_dir, args.model_save_path)
 
     vocab_fname = os.path.join(base_model_path, 'vocab.txt')

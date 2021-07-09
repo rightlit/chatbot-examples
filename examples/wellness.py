@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset # 데이터로더
 
 from kogpt2_transformers import get_kogpt2_tokenizer
-from kobert_transformers import get_tokenizer
+#from kobert_transformers import get_tokenizer
 
 class WellnessAutoRegressiveDataset(Dataset):
   """Wellness Auto Regressive Dataset"""

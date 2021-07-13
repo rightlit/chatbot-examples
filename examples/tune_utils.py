@@ -275,7 +275,7 @@ class Tuner(object):
                 #print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
                 #print("validation {} / {} : {} / {}".format(val_batch_cnt, valid_cnt, valid_pred, valid_num_data))
                 print("validation {} / {} : {} / {}".format(self.num_batches_per_epoch, valid_cnt, valid_pred, valid_num_data))
-           valid_cnt += 1
+            valid_cnt += 1
 
         valid_score = valid_pred / valid_num_data
         tf.logging.info("valid loss %.4f valid score %.4f" %

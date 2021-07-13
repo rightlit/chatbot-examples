@@ -222,23 +222,25 @@ class Tuner(object):
         checkpoint_loss = 0.0
         train_batch_cnt = self.num_batches_per_epoch
 
+        train_cnt = 0
         for current_input_feed in train_batches:
-            train_cnt = 0
             #_, _, _, current_loss = sess.run(output_feed, current_input_feed)
             _, _, current_logits, current_loss = sess.run(output_feed, current_input_feed)
             checkpoint_loss += current_loss
-
             current_preds = np.argmax(current_logits, axis=-1)
+            sess_global_step = global_step.eval(sess)
+
             if(train_cnt % 10 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
-                print('{} : {} / {} '.format(train_batch_cnt, train_cnt, global_step.eval(sess)))
+                print('{} : {} / {} '.format(train_batch_cnt, train_cnt, sess_global_step))
                 #print(current_logits)
                 #print(current_preds)
 
             #if(train_cnt % 1000 == 0):
-            if global_step.eval(sess) % self.eval_every == 0:
+            if((global_step.eval(sess) % 1000) == 0):
+            #if((global_step.eval(sess) % self.eval_every) == 0):
                 tf.logging.info("global step %d train loss %.4f" %
-                                (global_step.eval(sess), checkpoint_loss / self.eval_every))
+                                (sess_global_step, checkpoint_loss / self.eval_every))
                 checkpoint_loss = 0.0
                 self.validation(sess, saver, global_step)
                 #train_cnt = 0
@@ -267,7 +269,7 @@ class Tuner(object):
             for pred, label in zip(current_preds, current_labels):
                 if pred == label:
                     valid_pred += 1
-                if(valid_cnt % 100 == 0):
+                if(valid_cnt % 10000 == 0):
                     #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
                     print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
                 valid_cnt += 1

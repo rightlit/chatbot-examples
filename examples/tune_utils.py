@@ -220,7 +220,7 @@ class Tuner(object):
     def train(self, sess, saver, global_step, output_feed):
         train_batches = self.get_batch(self.train_data, num_epochs=self.num_epochs, is_training=True)
         checkpoint_loss = 0.0
-        train_batch_cnt = self.num_batches_per_epoch
+        train_batch_cnt = sess.run(self.num_batches_per_epoch)
 
         train_cnt = 0
         for current_input_feed in train_batches:
@@ -232,7 +232,7 @@ class Tuner(object):
 
             if(train_cnt % 10 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
-                print('{} : {} / {} '.format(train_batch_cnt, train_cnt, sess_global_step))
+                print('train {}' : {} / {} '.format(train_batch_cnt, train_cnt, sess_global_step))
                 #print(current_logits)
                 #print(current_preds)
 
@@ -254,7 +254,7 @@ class Tuner(object):
         valid_cnt = 0
         output_feed = [self.logits, self.loss]
         test_batches = self.get_batch(self.test_data, num_epochs=1, is_training=False)
-        val_batch_cnt = self.num_batches_per_epoch
+        val_batch_cnt = sess.run(self.num_batches_per_epoch)
 
         for current_input_feed, current_labels in test_batches:
             current_logits, current_loss = sess.run(output_feed, current_input_feed)
@@ -269,10 +269,11 @@ class Tuner(object):
             for pred, label in zip(current_preds, current_labels):
                 if pred == label:
                     valid_pred += 1
-                if(valid_cnt % 10000 == 0):
+                if(valid_cnt % 100 == 0):
                     #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
-                    print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
-                valid_cnt += 1
+                    #print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
+                    print("validation {}: {} / {}".format(val_batch_cnt, valid_pred, valid_num_data))
+            valid_cnt += 1
 
         valid_score = valid_pred / valid_num_data
         tf.logging.info("valid loss %.4f valid score %.4f" %

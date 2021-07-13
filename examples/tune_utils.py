@@ -235,8 +235,8 @@ class Tuner(object):
                 #print(current_logits)
                 #print(current_preds)
 
-            if(train_cnt % 1000 == 0):
-                #if global_step.eval(sess) % self.eval_every == 0:
+            #if(train_cnt % 1000 == 0):
+            if global_step.eval(sess) % self.eval_every == 0:
                 tf.logging.info("global step %d train loss %.4f" %
                                 (global_step.eval(sess), checkpoint_loss / self.eval_every))
                 checkpoint_loss = 0.0
@@ -269,7 +269,7 @@ class Tuner(object):
                     valid_pred += 1
                 if(valid_cnt % 100 == 0):
                     #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
-                    tf.logging.info("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
+                    print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
                 valid_cnt += 1
 
         valid_score = valid_pred / valid_num_data

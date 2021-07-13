@@ -269,10 +269,10 @@ class Tuner(object):
             for pred, label in zip(current_preds, current_labels):
                 if pred == label:
                     valid_pred += 1
-                if(valid_cnt % 100 == 0):
+                if(valid_cnt % 1000 == 0):
                     #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
                     #print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
-                    print("validation {}: {} / {}".format(val_batch_cnt, valid_pred, valid_num_data))
+                    print("validation {} / {} : {} / {}".format(val_batch_cnt, valid_cnt, valid_pred, valid_num_data))
             valid_cnt += 1
 
         valid_score = valid_pred / valid_num_data

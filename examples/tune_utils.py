@@ -270,7 +270,7 @@ class Tuner(object):
                     valid_cnt += 1
                     if(valid_cnt % 100 == 0):
                         #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
-                        tf.logging.info("{} / {} : pred: {}, label: {}', valid_cnt, val_batch_cnt, str(pred), str(label))
+                        tf.logging.info("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
 
         valid_score = valid_pred / valid_num_data
         tf.logging.info("valid loss %.4f valid score %.4f" %

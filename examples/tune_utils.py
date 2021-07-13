@@ -220,25 +220,29 @@ class Tuner(object):
     def train(self, sess, saver, global_step, output_feed):
         train_batches = self.get_batch(self.train_data, num_epochs=self.num_epochs, is_training=True)
         checkpoint_loss = 0.0
-        train_cnt = 0
+        train_batch_cnt = self.num_batches_per_epoch
+
         for current_input_feed in train_batches:
+            train_cnt = 0
             #_, _, _, current_loss = sess.run(output_feed, current_input_feed)
             _, _, current_logits, current_loss = sess.run(output_feed, current_input_feed)
             checkpoint_loss += current_loss
 
             current_preds = np.argmax(current_logits, axis=-1)
-            train_cnt += 1
             if(train_cnt % 10 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
-                print('{} : {} / {} '.format(self.num_batches_per_epoch, train_cnt, global_step.eval(sess)))
+                print('{} : {} / {} '.format(train_batch_cnt, train_cnt, global_step.eval(sess)))
                 #print(current_logits)
                 #print(current_preds)
 
-            if global_step.eval(sess) % self.eval_every == 0:
+            if(train_cnt % 1000 == 0):
+                #if global_step.eval(sess) % self.eval_every == 0:
                 tf.logging.info("global step %d train loss %.4f" %
                                 (global_step.eval(sess), checkpoint_loss / self.eval_every))
                 checkpoint_loss = 0.0
                 self.validation(sess, saver, global_step)
+                #train_cnt = 0
+            train_cnt += 1
 
         print('***** Eval results *****')
         print('average valid scores: {:.4f}', np.average(self.valid_scores))
@@ -246,6 +250,7 @@ class Tuner(object):
     def validation(self, sess, saver, global_step):
         valid_loss, valid_pred, valid_num_data = 0, 0, 0
         valid_cnt = 0
+        val_batch_cnt = self.num_batches_per_epoch
         output_feed = [self.logits, self.loss]
         test_batches = self.get_batch(self.test_data, num_epochs=1, is_training=False)
         for current_input_feed, current_labels in test_batches:
@@ -264,7 +269,8 @@ class Tuner(object):
                 else:
                     valid_cnt += 1
                     if(valid_cnt % 100 == 0):
-                        tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
+                        #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
+                        tf.logging.info("{} / {} : pred: {}, label: {}', valid_cnt, val_batch_cnt, str(pred), str(label))
 
         valid_score = valid_pred / valid_num_data
         tf.logging.info("valid loss %.4f valid score %.4f" %

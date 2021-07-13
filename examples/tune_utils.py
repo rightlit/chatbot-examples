@@ -220,7 +220,7 @@ class Tuner(object):
     def train(self, sess, saver, global_step, output_feed):
         train_batches = self.get_batch(self.train_data, num_epochs=self.num_epochs, is_training=True)
         checkpoint_loss = 0.0
-        train_batch_cnt = sess.run(self.num_batches_per_epoch)
+        train_batch_cnt = self.num_batches_per_epoch
 
         train_cnt = 0
         for current_input_feed in train_batches:
@@ -254,7 +254,7 @@ class Tuner(object):
         valid_cnt = 0
         output_feed = [self.logits, self.loss]
         test_batches = self.get_batch(self.test_data, num_epochs=1, is_training=False)
-        val_batch_cnt = sess.run(self.num_batches_per_epoch)
+        val_batch_cnt = self.num_batches_per_epoch
 
         for current_input_feed, current_labels in test_batches:
             current_logits, current_loss = sess.run(output_feed, current_input_feed)

@@ -181,6 +181,8 @@ class Tuner(object):
         self.train_data, self.train_data_size = self.load_or_tokenize_corpus(train_corpus_fname, tokenized_train_corpus_fname)
         self.test_data, self.test_data_size = self.load_or_tokenize_corpus(test_corpus_fname, tokenized_test_corpus_fname)
 
+        self.num_batches_per_epoch = 0
+
     def load_or_tokenize_corpus(self, corpus_fname, tokenized_corpus_fname):
         data_set = []
         if os.path.exists(tokenized_corpus_fname):
@@ -226,7 +228,9 @@ class Tuner(object):
 
             current_preds = np.argmax(current_logits, axis=-1)
             train_cnt += 1
-            #if(train_cnt % 10 == 0):
+            if(train_cnt % 10 == 0):
+                #print(train_cnt, current_logits, ' preds : ', current_preds)
+                print('{} : {} / {} '.format(self.num_batches_per_epoch, train_cnt, global_step.eval(sess)))
                 #print(current_logits)
                 #print(current_preds)
 
@@ -259,7 +263,7 @@ class Tuner(object):
                     valid_pred += 1
                 else:
                     valid_cnt += 1
-                    if(valid_cnt < 5):
+                    if(valid_cnt % 100 == 0):
                         tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
 
         valid_score = valid_pred / valid_num_data
@@ -277,13 +281,14 @@ class Tuner(object):
             data_size = self.train_data_size
         else:
             data_size = self.test_data_size
-        num_batches_per_epoch = int((data_size - 1) / self.batch_size)
+        self.num_batches_per_epoch = int((data_size - 1) / self.batch_size)
+
         if is_training:
-            tf.logging.info("num_batches_per_epoch : " + str(num_batches_per_epoch))
+            tf.logging.info("num_batches_per_epoch : " + str(self.num_batches_per_epoch))
         for epoch in range(num_epochs):
             idx = random.sample(range(data_size), data_size)
             data = np.array(data)[idx]
-            for batch_num in range(num_batches_per_epoch):
+            for batch_num in range(self.num_batches_per_epoch):
                 batch_sentences = []
                 batch_labels = []
                 start_index = batch_num * self.batch_size

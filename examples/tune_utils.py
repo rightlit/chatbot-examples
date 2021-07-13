@@ -250,9 +250,10 @@ class Tuner(object):
     def validation(self, sess, saver, global_step):
         valid_loss, valid_pred, valid_num_data = 0, 0, 0
         valid_cnt = 0
-        val_batch_cnt = self.num_batches_per_epoch
         output_feed = [self.logits, self.loss]
         test_batches = self.get_batch(self.test_data, num_epochs=1, is_training=False)
+        val_batch_cnt = self.num_batches_per_epoch
+
         for current_input_feed, current_labels in test_batches:
             current_logits, current_loss = sess.run(output_feed, current_input_feed)
             current_preds = np.argmax(current_logits, axis=-1)
@@ -266,11 +267,10 @@ class Tuner(object):
             for pred, label in zip(current_preds, current_labels):
                 if pred == label:
                     valid_pred += 1
-                else:
-                    valid_cnt += 1
-                    if(valid_cnt % 100 == 0):
-                        #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
-                        tf.logging.info("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
+                if(valid_cnt % 100 == 0):
+                    #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
+                    tf.logging.info("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
+                valid_cnt += 1
 
         valid_score = valid_pred / valid_num_data
         tf.logging.info("valid loss %.4f valid score %.4f" %

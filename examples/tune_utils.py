@@ -232,7 +232,7 @@ class Tuner(object):
 
             if(train_cnt % 10 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
-                print('train {} : {} / {} '.format(train_batch_cnt, train_cnt, sess_global_step))
+                print('train {} / {} : {} / {} '.format(self.num_train_steps), self.num_warmup_steps, train_cnt, sess_global_step))
                 #print(current_logits)
                 #print(current_preds)
 

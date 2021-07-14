@@ -223,6 +223,7 @@ class Tuner(object):
         train_batch_cnt = self.num_batches_per_epoch
         num_epochs = self.num_epochs
         train_cnt = 0
+        train_num_data = 0
         for current_input_feed in train_batches:
             #_, _, _, current_loss = sess.run(output_feed, current_input_feed)
             _, _, current_logits, current_loss = sess.run(output_feed, current_input_feed)
@@ -230,9 +231,9 @@ class Tuner(object):
             current_preds = np.argmax(current_logits, axis=-1)
             sess_global_step = global_step.eval(sess)
 
-            if(train_cnt % 10 == 0):
+            if(train_cnt % 100 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
-                print('train {} / {} : {} / {} '.format(self.num_train_steps, self.num_warmup_steps, train_cnt, sess_global_step))
+                print('train {} : {} / {}'.format(self.num_train_steps, self.num_batches_per_epoch, train_cnt))
                 #print(current_logits)
                 #print(current_preds)
 

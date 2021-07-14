@@ -230,10 +230,10 @@ class Tuner(object):
             checkpoint_loss += current_loss
             current_preds = np.argmax(current_logits, axis=-1)
             sess_global_step = global_step.eval(sess)
-
+            n_epochs = int(train_cnt / train_batch_cnt)
             if(train_cnt % 100 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
-                print('train {} : {} / {}'.format(self.num_train_steps, self.num_batches_per_epoch, train_cnt))
+                print('train ({}) {} : {} / {}'.format(n_epochs, self.num_train_steps, train_batch_cnt, train_cnt))
                 #print(current_logits)
                 #print(current_preds)
 
@@ -275,7 +275,8 @@ class Tuner(object):
                 #tf.logging.info("pred: " + str(pred) + ", label: " + str(label))
                 #print("{} / {} : pred: {}, label: {}".format(valid_cnt, val_batch_cnt, str(pred), str(label)))
                 #print("validation {} / {} : {} / {}".format(val_batch_cnt, valid_cnt, valid_pred, valid_num_data))
-                print("validation {} / {} : {} / {}".format(self.num_batches_per_epoch, valid_cnt, valid_pred, valid_num_data))
+                #print("validation {} / {} : {} / {}".format(self.num_batches_per_epoch, valid_cnt, valid_pred, valid_num_data))
+                print("validation {} / {}".format(self.num_batches_per_epoch, valid_cnt))
             valid_cnt += 1
 
         valid_score = valid_pred / valid_num_data

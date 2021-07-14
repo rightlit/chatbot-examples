@@ -10,6 +10,10 @@
     - 한국어 임베딩 : [https://github.com/ratsgo/embedding](https://github.com/ratsgo/embedding) <br>
     - 심리상담 챗봇 구현하기 : [https://rogerheederer.github.io/ChatBot_Wellness/](https://rogerheederer.github.io/ChatBot_Wellness/) <br>
 
+- 모델 다운로드 
+    - BERT 학습모델 : [http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth) <br>
+
+
 예제는 아래와 같이 구성되어 있습니다.
 
 ### 예제 구성

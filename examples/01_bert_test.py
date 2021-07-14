@@ -11,8 +11,9 @@ model = BERTEmbeddingEvaluator(model_fname = "./tune-ckpt",
 def sentiment_predict(sentence):
   p_data = model.predict(sentence) # 예측
   p_max = np.max(p_data)
-  score = p_max 
-  if(score > 0.5):
+  score = np.argmax(p_data)
+  #score = p_max 
+  if(score == 1):
     print("{} : 긍정 리뷰입니다.{:.1%}\n".format(sentence, p_max))
   else:
     print("{} : 부정 리뷰입니다.{:.1%}\n".format(sentence, p_max))

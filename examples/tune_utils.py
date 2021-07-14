@@ -231,13 +231,13 @@ class Tuner(object):
             checkpoint_loss += current_loss
             current_preds = np.argmax(current_logits, axis=-1)
             sess_global_step = global_step.eval(sess)
+            if(train_batch_count == 0):
+                train_batch_cnt = self.num_batches_per_epoch
             if(train_batch_cnt > 0):
                 n_epochs = int(train_cnt / train_batch_cnt)
             if(train_cnt % 100 == 0):
                 #print(train_cnt, current_logits, ' preds : ', current_preds)
                 print('train ({}) {} : {} / {}'.format(n_epochs, self.num_train_steps, train_batch_cnt, train_cnt))
-                #print(current_logits)
-                #print(current_preds)
 
             #if(train_cnt % 1000 == 0):
             if((global_step.eval(sess) % 1000) == 0):

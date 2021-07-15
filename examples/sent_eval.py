@@ -6,12 +6,12 @@ from bert.modeling import BertModel, BertConfig
 from bert.tokenization import FullTokenizer, convert_to_unicode
 #from bilm import Batcher, BidirectionalLanguageModel, weight_layers
 #from preprocess import get_tokenizer, post_processing
-from supervised_nlputils import get_tokenizer, post_processing
+#from supervised_nlputils import get_tokenizer, post_processing
 from collections import defaultdict
 
 import numpy as np
 from lxml import html
-from gensim.models import Doc2Vec, LdaModel
+#from gensim.models import Doc2Vec, LdaModel
 #from visualize_utils import visualize_homonym, visualize_between_sentences, \
 #    visualize_self_attention_scores, visualize_sentences, visualize_words, visualize_between_words
 #from tune_utils import make_elmo_graph, make_bert_graph

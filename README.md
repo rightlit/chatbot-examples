@@ -12,27 +12,31 @@
 
 ###  학습모델 다운로드 
 - BERT 분류 모델(NSMC) : [kobert_tune-ckpt.zip](http://jamjoong.org/jwlee/kobert_tune-ckpt.zip) <br>
-    - Google BERT pretrained + fine tuned w/ NSMC dataset
+    - Google BERT pretrained + fine tuning w/ NSMC dataset
 - GPT2 챗봇 모델(일상대화) : [kogpt2-chatbot-dialog.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth) <br>
-    - GPT2 pretrained + fine tuned w/ Chatbot dataset
+    - GPT2 pretraining w/ Chatbot dataset
 - GPT2 챗봇 모델(건강상담) : [kogpt2-chatbot-dialog_wellness.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog_wellness.pth) <br>
-    - GPT2 pretrained + fine tuned w/ Wellness dataset
+    - GPT2 pretraining w/ Wellness dataset
 
 예제는 아래와 같이 구성되어 있습니다.
 
 ### 예제 구성
 1. BERT 를 이용한 분류
     - 모델 훈련 : [01_bert_train.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_train.py)
-      - Google BERT 모델 다운로드, Chatbot 데이터셋 전처리 후 구동
+      - Google BERT 모델 다운로드, NSMC 데이터셋 전처리 후 구동 (01_bert_train.ipynb 참고)
          - BERT 모델 : https://storage.googleapis.com/bert_models/2018_11_23/multi_cased_L-12_H-768_A-12.zip
          - Chatbot 데이터셋 : https://github.com/songys/Chatbot_data
     - 모델 시험 : [01_bert_test.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_test.py)
       - 학습모델 다운로드 후 구동
 2. GPT2를 이용한 챗봇(일반대화)
     - 모델 훈련 : [02_chatbot_kogpt2_train.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_train.py)
+      - Chatbot 데이터셋 전처리 후 구동 (02_chatbot_kogpt2_train.ipynb 참고)
+         - Chatbot 데이터셋 : https://github.com/songys/Chatbot_data
     - 모델 시험 : [02_chatbot_kogpt2_test.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_test.py)
 3. GPT2를 이용한 챗봇(건강상담)
     - 모델 훈련 : [03_chatbot_kogpt2_train.py](https://github.com/rightlit/nlp2/blob/main/examples/03_chatbot_kogpt2_train.py)
+      - Wellness 데이터셋 전처리 후 구동 (03_chatbot_kogpt2_train.ipynb 참고)
+         - Wellness 데이터셋 : https://github.com/nawnoes/WellnessConversation-LanguageModel
     - 모델 시험 : [03_chatbot_kogpt2_test.py](https://github.com/rightlit/nlp2/blob/main/examples/03_chatbot_kogpt2_test.py)
 - - -
 * 트랜스포머(transformers)를 이용한 챗봇 

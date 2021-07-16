@@ -23,10 +23,11 @@
 ### 예제 구성
 1. BERT 를 이용한 분류
     - 모델 훈련 : [01_bert_train.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_train.py)
-       - 선행작업
-          - Google BERT 모델 다운로드
-          - Chatbot 데이터셋 전처리
+      - Google BERT 모델 다운로드, Chatbot 데이터셋 전처리 후 구동
+         - BERT 모델 : https://storage.googleapis.com/bert_models/2018_11_23/multi_cased_L-12_H-768_A-12.zip
+         - Chatbot 데이터셋 : https://github.com/songys/Chatbot_data
     - 모델 시험 : [01_bert_test.py](https://github.com/rightlit/nlp2/blob/main/examples/01_bert_test.py)
+      - 학습모델 다운로드 후 구동
 2. GPT2를 이용한 챗봇(일반대화)
     - 모델 훈련 : [02_chatbot_kogpt2_train.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_train.py)
     - 모델 시험 : [02_chatbot_kogpt2_test.py](https://github.com/rightlit/nlp2/blob/main/examples/02_chatbot_kogpt2_test.py)

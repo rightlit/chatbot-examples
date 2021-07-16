@@ -23,7 +23,8 @@ root_path='./'
 data_path = f"{root_path}/chatbot_dialog.txt"
 #data_path = f"{root_path}/chatbot_dialog.txt.1"
 checkpoint_path =f"{root_path}/checkpoint"
-save_ckpt_path = f"{checkpoint_path}/kogpt2-wellnesee-auto-regressive.pth"
+#save_ckpt_path = f"{checkpoint_path}/kogpt2-wellnesee-auto-regressive.pth"
+save_ckpt_path = f"{root_path}/kogpt2-chatbot-dialog.pth"
 
 n_epoch = 5         # Num of Epoch
 batch_size = 2      # 배치 사이즈

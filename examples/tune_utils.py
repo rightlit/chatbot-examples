@@ -6,7 +6,7 @@ from tensorflow.python.ops import nccl_ops
 
 #from gensim.models import Word2Vec
 from collections import defaultdict
-from scipy.stats import truncnorm
+#from scipy.stats import truncnorm
 #import sentencepiece as spm
 
 sys.path.append('../models')

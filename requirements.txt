@@ -1,4 +1,4 @@
-tensorflow <= 1.15.0   # 1.x
-transformers >= 3.0.0  # 4.6.0
+tensorflow == 1.15.0   # 1.x
+transformers == 4.6.0  # 4.6.0
 tokenizers >= 0.7.0    # 0.10.0
 torch >= 1.1.0         # 1.6.0

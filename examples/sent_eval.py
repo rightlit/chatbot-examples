@@ -16,7 +16,7 @@ import numpy as np
 #    visualize_self_attention_scores, visualize_sentences, visualize_words, visualize_between_words
 #from tune_utils import make_elmo_graph, make_bert_graph
 from tune_utils import make_bert_graph
-from sklearn.preprocessing import normalize
+#from sklearn.preprocessing import normalize
 
 
 class SentenceEmbeddingEvaluator:

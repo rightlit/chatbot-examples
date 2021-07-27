@@ -4,8 +4,8 @@
 데이터셋은 송영숙(songys)님이 제공해준 Chatbot_Data 및 AI 허브의 건강상담 데이터를 활용하였습니다.
 
 - 데이터셋
-    - [Chatbot_data(https://github.com/songys/Chatbot_data)](https://github.com/songys/Chatbot_data)
-    - [https://aihub.or.kr/keti_data_board/language_intelligence)](https://aihub.or.kr/keti_data_board/language_intelligence)
+    - [Chatbot_data(https://github.com/songys/Chatbot_data](https://github.com/songys/Chatbot_data)
+    - [https://aihub.or.kr/keti_data_board/language_intelligence](https://aihub.or.kr/keti_data_board/language_intelligence)
 - 소스 참고 
     - 트랜스포머를 이용한 한국어 챗봇(Transformer Chatbot Tutorial) : [https://wikidocs.net/89786](https://wikidocs.net/89786) <br>
     - 텐서플로와 머신러닝으로 시작하는 자연어처리 : [https://github.com/NLP-kr/tensorflow-ml-nlp](https://github.com/NLP-kr/tensorflow-ml-nlp) <br>

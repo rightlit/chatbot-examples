@@ -17,7 +17,7 @@
     - Google BERT pretrained + fine tuning w/ NSMC dataset
 - GPT2 챗봇 모델(일상대화) :
     - GPT2 base model : [http://jamjoong.org/jwlee/cached_model.zip](http://jamjoong.org/jwlee/cached_model.zip)
-    - GPT2 pretraining w/ Chatbot dataset : [kogpt2-chatbot-dialog.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth)
+    - GPT2 pretraining w/ Chatbot dataset : [http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth)
 - GPT2 챗봇 모델(건강상담) :
     - GPT2 base model : [http://jamjoong.org/jwlee/cached_model.zip](http://jamjoong.org/jwlee/cached_model.zip)
     - GPT2 pretraining w/ Wellness dataset : [http://jamjoong.org/jwlee/kogpt2-chatbot-dialog_wellness.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog_wellness.pth)

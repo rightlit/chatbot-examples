@@ -13,14 +13,14 @@
     - 심리상담 챗봇 구현하기 : [https://rogerheederer.github.io/ChatBot_Wellness/](https://rogerheederer.github.io/ChatBot_Wellness/) <br>
 
 ###  학습모델 다운로드 
-- BERT 분류 모델(NSMC) : [tune-ckpt.zip](http://jamjoong.org/jwlee/tune-ckpt.zip) <br>
+- BERT 분류 모델(NSMC) : [http://jamjoong.org/jwlee/tune-ckpt.zip](http://jamjoong.org/jwlee/tune-ckpt.zip) <br>
     - Google BERT pretrained + fine tuning w/ NSMC dataset
 - GPT2 챗봇 모델(일상대화) :
-    - GPT2 base model : [cached_model.zip](http://jamjoong.org/jwlee/cached_model.zip)
+    - GPT2 base model : [http://jamjoong.org/jwlee/cached_model.zip](http://jamjoong.org/jwlee/cached_model.zip)
     - GPT2 pretraining w/ Chatbot dataset : [kogpt2-chatbot-dialog.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog.pth)
 - GPT2 챗봇 모델(건강상담) :
-    - GPT2 base model : [cached_model.zip](http://jamjoong.org/jwlee/cached_model.zip)
-    - GPT2 pretraining w/ Wellness dataset : [kogpt2-chatbot-dialog_wellness.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog_wellness.pth)
+    - GPT2 base model : [http://jamjoong.org/jwlee/cached_model.zip](http://jamjoong.org/jwlee/cached_model.zip)
+    - GPT2 pretraining w/ Wellness dataset : [http://jamjoong.org/jwlee/kogpt2-chatbot-dialog_wellness.pth](http://jamjoong.org/jwlee/kogpt2-chatbot-dialog_wellness.pth)
 
 예제는 아래와 같이 구성되어 있습니다.
 

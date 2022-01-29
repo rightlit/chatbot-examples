@@ -2,14 +2,15 @@ import sys
 import numpy as np
 import scipy.stats as st
 from gensim.models import Word2Vec
-from fasttext import load_model as load_ft_model
+#from fasttext import load_model as load_ft_model
 from sklearn.preprocessing import normalize
 
 from soynlp.hangle import compose, character_is_korean
-from preprocess import get_tokenizer, jamo_sentence
+from ratsgo.supervised_nlputils import get_tokenizer
+from ratsgo.unsupervised_nlputils import jamo_sentence
 
-sys.path.append('../models')
-from visualize_utils import visualize_words, visualize_between_words
+#sys.path.append('..')
+#from visualize_utils import visualize_words, visualize_between_words
 
 
 class WordEmbeddingEvaluator:

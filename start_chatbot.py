@@ -154,7 +154,8 @@ def query(query_str):
         if(cnt > 10):
             break
 
-    return ret_str
+    print(ret_str)
+    return 'OK'
 
 # ready
 print('Chatbot Flask daemon Ready!!!')

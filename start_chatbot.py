@@ -67,8 +67,9 @@ for json_item in json_list:
     
 #rawdata = []
 rawdata = list(rawdata_dic.keys())
-for row in rawdata:
-    print(row)
+for i, row in enumerate(rawdata):
+    if(i < 5):
+        print(row)
 
 ## TfidfVectorizer  방식으로 가중치를 주어서 Bow 를 만들다 
 vectorize = TfidfVectorizer(
@@ -77,9 +78,13 @@ vectorize = TfidfVectorizer(
     max_features=1000, #2048
     sublinear_tf=True    # tf값에 1+log(tf)를 적용하여 tf값이 무한정 커지는 것을 막음
 )
-#X = vectorize.fit_transform(rawdata)
-X = vectorize.fit_transform(new_rawdata)
+X = vectorize.fit_transform(rawdata)
 
+#new_rawdata = []
+#for row in rawdata:
+#    new_rawdata.append(text_cleaning(row))
+#X = vectorize.fit_transform(new_rawdata)
+    
 print(
     'fit_transform, (sentence {}, feature {})'.format(X.shape[0], X.shape[1])
 )    

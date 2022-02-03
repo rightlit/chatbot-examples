@@ -154,7 +154,7 @@ def query(query_str):
         if(cnt > 10):
             break
 
-    print(ret_str)
+    print('retstr : ', ret_str)
     return 'OK'
 
 # ready

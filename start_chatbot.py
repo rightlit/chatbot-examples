@@ -1,15 +1,15 @@
 #!/usr/local/bin/python
 
-import pandas as pd
 
-# FAQ DATA LOAD
+##### FAQ DATA LOAD
+import pandas as pd
 faq_file = '/content/chatbot_faq_all.txt_new'
 colnames = ['ID', '질문', '답변', '대분류ID', '대분류', '중분류ID', '중분류', '소분류ID', '소분류', '사용여부', '연결 시나리오ID', '연결 시나리오명', '웹 링크 버튼', '웹 링크 URL', '대화모형 사용여부', '시나리오 사용여부', '작성자ID', '작성자 로그인 ID', '작성자', '작성일', '수정자ID', '수정자 로그인 ID', '수정자', '최종수정일', '상담 ID', '메세지 ID']
 selected_cols = ['ID', '질문', '답변', '대분류', '중분류', '소분류']
 df_faq_data = pd.read_csv(faq_file, sep='\t', encoding='cp949', names=colnames, usecols=selected_cols)
 #print(df_faq_data)
 
-# dataframe to json list
+##### dataframe to json list
 json_list = []
 df_faq_id = df_faq_data['ID'].tolist()
 df_faq_question = df_faq_data['질문'].tolist()
@@ -30,6 +30,7 @@ for i in range(len(df_faq_id)):
 
 #print(json_list)
 
+##### 함수 정의
 import pandas as pd
 pd.options.mode.chained_assignment = None
 
@@ -52,7 +53,7 @@ def tokenizer(raw, pos=["Noun","Alpha","Verb","Number"], stopword=[]):
             if len(word) > 1 and tag in pos and word not in stopword
         ]
 
-# CORPUS 만들기 (rawdata)
+##### CORPUS 만들기 (rawdata)
 # 질문/답변 데이터 분리
 rawdata_dic = {}
 rawdata_q = []

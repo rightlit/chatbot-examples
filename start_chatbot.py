@@ -151,8 +151,9 @@ def query(query_str):
             break
     return srch
 
+# ready
+print('Chatbot Flask daemon Ready!!!')
 
 # APP 데몬 시작
 app.run(host="localhost",port=5001)
 
-print('Chatbot Flask daemon Ready!!!')

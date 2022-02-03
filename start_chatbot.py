@@ -2,6 +2,7 @@
 
 
 ##### FAQ DATA LOAD
+print('FAQ DATA LOAD loading...')
 import pandas as pd
 faq_file = '/content/chatbot_faq_all.txt_new'
 colnames = ['ID', '질문', '답변', '대분류ID', '대분류', '중분류ID', '중분류', '소분류ID', '소분류', '사용여부', '연결 시나리오ID', '연결 시나리오명', '웹 링크 버튼', '웹 링크 URL', '대화모형 사용여부', '시나리오 사용여부', '작성자ID', '작성자 로그인 ID', '작성자', '작성일', '수정자ID', '수정자 로그인 ID', '수정자', '최종수정일', '상담 ID', '메세지 ID']
@@ -71,6 +72,8 @@ for i, row in enumerate(rawdata):
     if(i < 5):
         print(row)
 
+print('Making CORPUS : FAQ DATA tokenizing...')
+
 ## TfidfVectorizer  방식으로 가중치를 주어서 Bow 를 만들다 
 vectorize = TfidfVectorizer(
     tokenizer=tokenizer,
@@ -102,6 +105,7 @@ df_tfi = pd.DataFrame(X.toarray(), columns=features)
 #X_question = vectorize.fit_transform(rawdata)
 X_question = vectorize.transform(rawdata_q)
 
+print('Chatbot Flask daemon Ready!!!')
 
 ##### main
 from flask import Flask

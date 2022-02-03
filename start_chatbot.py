@@ -143,13 +143,18 @@ def query(query_str):
     #print(score)
     
     cnt = 0
+    ret_str = ''
     for i in score.argsort()[::-1]:
         if score[i] > 0:
             print('{} / score : {}'.format(rawdata_q[i], score[i]))
+        if(i == 0):
+            ret_str = '{} / score : {}'.format(rawdata_q[i], score[i])
+
         cnt = cnt + 1
         if(cnt > 10):
             break
-    return srch
+
+    return ret_str
 
 # ready
 print('Chatbot Flask daemon Ready!!!')

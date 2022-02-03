@@ -102,10 +102,9 @@ df_tfi = pd.DataFrame(X.toarray(), columns=features)
 # 답변 문장으로 학습하고, 질문으로 유사도 비교
 # transform 만 수행
 
+print('TF-IDF vectorizing...')
 #X_question = vectorize.fit_transform(rawdata)
 X_question = vectorize.transform(rawdata_q)
-
-print('Chatbot Flask daemon Ready!!!')
 
 ##### main
 from flask import Flask
@@ -129,7 +128,7 @@ def boards(page):
 
 # QUERY sample
 @app.route('/query/<query_str>')
-def query(page):
+def query(query_str):
     #query_str = '마이너스 통장 신청하려고 합니다'
     srch=[t for t in tokenizer(query_str) if t in features]
     #print(srch)
@@ -155,3 +154,5 @@ def query(page):
 
 # APP 데몬 시작
 app.run(host="localhost",port=5001)
+
+print('Chatbot Flask daemon Ready!!!')

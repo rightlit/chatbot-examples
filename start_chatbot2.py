@@ -4,7 +4,7 @@
 from flask import Flask
 app = Flask(__name__)
 
-from corpus_util import load_corpus_data, get_tfid_vector
+from corpus_util import load_corpus_data, get_tfid_vector, tokenizer
 
 def file_log(s):
     f = open('/tmp/flask.log', 'a')

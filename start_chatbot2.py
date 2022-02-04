@@ -41,6 +41,7 @@ def query(query_str):
     score = srch_dtm.sum(axis=1)
     #print(score)
     
+    rawdata_q = question_data
     cnt = 0
     ret_str = ''
     ret_str = '[Q]' + ' '.join(srch)

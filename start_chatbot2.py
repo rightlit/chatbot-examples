@@ -8,7 +8,7 @@ from corpus_util import load_corpus_data, get_tfid_vector
 
 def filg_log(s):
     f = open('./flask.log', 'a')
-    f.write(s + '\n')
+    f.write(str(s) + '\n')
     f.close()
 
 corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
@@ -46,7 +46,7 @@ def query(query_str):
 
     score = srch_dtm.sum(axis=1)
     #print(score)
-    file_log('score:' + score)
+    file_log('score:' + str(score))
     
     rawdata_q = question_data
     cnt = 0
@@ -63,7 +63,7 @@ def query(query_str):
             break
 
     print('ret_str : ', ret_str)
-    file_log('ret_str : ', ret_str)
+    file_log(ret_str)
     return ret_str
 
 # ready

@@ -113,4 +113,4 @@ def get_tfid_vector(corpus_data, question_data):
     #X_question = vectorize.fit_transform(rawdata)
     X_question = vectorize.transform(rawdata_q)
 
-    return X_question, features
+    return vectorize, X_question, features

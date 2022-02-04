@@ -11,6 +11,7 @@ from QnaSearch import QnaSearch
 
 qna = QnaSearch()
 qna.load_corpus_data('/content/chatbot_faq_all.txt_new')
+qna.get_tfid_vector()
     
 #corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
 #vec, X_question, key_features = get_tfid_vector(corpus_data, question_data)

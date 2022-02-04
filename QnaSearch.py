@@ -155,8 +155,8 @@ class QnaSearch:
         file_log(ret_str)
         return ret_str
  
-   # BM25 벡터화
-   def get_bm25_vector(self):
+    # BM25 벡터화
+    def get_bm25_vector(self):
         corpus = self.rawdata_q
         tokenized_corpus = [tokenizer(doc) for doc in corpus]
         #srch=[t for t in tokenizer(input_text) if t in features]

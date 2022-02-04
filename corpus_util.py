@@ -1,10 +1,46 @@
 import os
 import pandas as pd
+import re
 
+# 파일 로깅
 def file_log(s):
     f = open('/tmp/flask.log', 'a')
     f.write(str(s) + '\n')
     f.close()
+
+# 텍스트 정제
+def text_cleaning(text): 
+        #이메일 주소 제거
+        email =re.compile('([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)')
+        text = email.sub('', text) 
+        #URL 제거
+        url =re.compile('(http|ftp|https)://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
+        text = url.sub('', text) 
+        #HTML 제거
+        html =re.compile('<[^>]*>')
+        text = html.sub('', text) 
+
+        #특수문자를 공백으로 대체(문장을 살리기위헤 마침표는 남겨둠)
+        #special =re.compile('[^\w\s]')
+        #text = special.sub(' ', text) 
+        special= ['*', '{', ',', ':', ']', '$', '+', '[', '#', '(', '%', '&', '}', '`', ''', ''','·',
+                    '=', ';', '>','＞', '/', '"', '"', '"', '\\', '?', '~', "'", '<', ')', '^', '!', '_',
+                    '|', '@','@','©','ⓒ', '℗','®','①', '-','▶','…','☞','▲','◆','■', #'.', 빼고
+                    '☎', '※','②','③','④'] 
+        for chr in special :
+            text=text.replace(chr,' ')
+
+            #특수문자 제거 후 생기는 중복된 공백 제거
+            while text.find('  ') > 0:
+                text = text.replace('  ',' ' ) # 중복된 공백 제거
+
+            #특수문자 제거 후 생기는 중복된 개행 제거
+            while text.find('\n\n') > 0:
+                text = text.replace('\n\n','\n' ) # 중복된 개행 제거
+
+            #좌우측 공백 삭제
+            text = text.strip()
+        return text
 
 def load_corpus_data(data_file):
 

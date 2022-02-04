@@ -12,7 +12,7 @@ def file_log(s):
     f.close()
 
 corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
-X_question = get_tfid_vector(corpus_data, question_data)
+X_question, key_features = get_tfid_vector(corpus_data, question_data)
 
 # HELLO
 @app.route('/hello')
@@ -34,6 +34,7 @@ def boards(page):
 @app.route('/query/<query_str>')
 def query(query_str):
     #query_str = '마이너스 통장 신청하려고 합니다'
+    features = key_features
     srch=[t for t in tokenizer(query_str) if t in features]
     #print(srch)
     file_log(" ".join(srch))

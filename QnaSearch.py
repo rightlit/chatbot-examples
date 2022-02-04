@@ -21,8 +21,8 @@ class QnaSearch:
         #self.tokenizer = tokenizer 
         self.rawdata = [] 
         self.rawdata_q = []
-	self.X_question = []
-	self.features = []
+        self.X_question = []
+        self.features = []
         self.vectorize = None
         self.bm25 = None
 

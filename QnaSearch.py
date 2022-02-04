@@ -22,7 +22,7 @@ class QnaSearch:
         self.rawdata = [] 
         self.rawdata_q = []
         self.vectorize = None
-	self.bm25 = None
+        self.bm25 = None
 
     # CORPUS 데이터 불러오기
     def load_corpus_data(self, data_file):

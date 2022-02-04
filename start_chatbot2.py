@@ -7,7 +7,7 @@ app = Flask(__name__)
 #from corpus_util import load_corpus_data, get_tfid_vector, tokenizer
 from corpus_util import file_log
 import numpy as np
-import QnaSearch
+from QnaSearch import QnaSearch
 
 qna = QnaSearch()
 qna.load_corpus_data('/content/chatbot_faq_all.txt_new')

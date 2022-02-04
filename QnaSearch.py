@@ -161,7 +161,7 @@ class QnaSearch:
         tokenized_corpus = [tokenizer(doc) for doc in corpus]
         #srch=[t for t in tokenizer(input_text) if t in features]
         self.bm25 = BM25Okapi(tokenized_corpus)
-	
+
     # 유사문장 검색(BM25)
     def search_query_bm25(self, query_str):
         #query = "windy London"

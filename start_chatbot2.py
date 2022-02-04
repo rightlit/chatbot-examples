@@ -7,7 +7,7 @@ app = Flask(__name__)
 from corpus_util import load_corpus_data, get_tfid_vector
 
 def file_log(s):
-    f = open('./flask.log', 'a')
+    f = open('/tmp/flask.log', 'a')
     f.write(str(s) + '\n')
     f.close()
 

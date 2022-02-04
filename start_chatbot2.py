@@ -5,6 +5,7 @@ from flask import Flask
 app = Flask(__name__)
 
 from corpus_util import load_corpus_data, get_tfid_vector, tokenizer
+import numpy as np
 
 def file_log(s):
     f = open('/tmp/flask.log', 'a')
@@ -12,7 +13,7 @@ def file_log(s):
     f.close()
 
 corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
-X_question, key_features = get_tfid_vector(corpus_data, question_data)
+vec, X_question, key_features = get_tfid_vector(corpus_data, question_data)
 
 # HELLO
 @app.route('/hello')
@@ -35,6 +36,8 @@ def boards(page):
 def query(query_str):
     #query_str = '마이너스 통장 신청하려고 합니다'
     features = key_features
+    vectorize = vec
+    
     srch=[t for t in tokenizer(query_str) if t in features]
     #print(srch)
     file_log(" ".join(srch))

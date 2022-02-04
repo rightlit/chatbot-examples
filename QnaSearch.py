@@ -78,6 +78,7 @@ class QnaSearch:
 
         #return rawdata, rawdata_q
 
+    # TF-IDF 벡터화
     def get_tfid_vector(self):
 
         #rawdata = corpus_data
@@ -153,8 +154,29 @@ class QnaSearch:
         print('ret_str : ', ret_str)
         file_log(ret_str)
         return ret_str
-        
-       
+ 
+   # BM25 벡터화
+   def get_bm25_vector(self):
+        corpus = self.rawdata_q
+        tokenized_corpus = [tokenizer(doc) for doc in corpus]
+        #srch=[t for t in tokenizer(input_text) if t in features]
+        self.bm25 = BM25Okapi(tokenized_corpus)
+	
+    # 유사문장 검색(BM25)
+    def search_query_bm25(self, query_str):
+        #query = "windy London"
+        #query = '마이너스 통장 신청하려고 합니다'
+        query = query_str
+        #tokenized_query = query.split(" ")
+        tokenized_query = tokenizer(query)
+        doc_scores = bm25.get_scores(tokenized_query)
+
+        #print(doc_scores) # array type
+        rs_list = self.bm25.get_top_n(tokenized_query, corpus, n=10)
+        ret_str = '|'.join(rs_list)
+        return ret_str
+
+
 # 인스턴스 생성 
 #qna = QnaSearch() 
 # 메소드 호출 

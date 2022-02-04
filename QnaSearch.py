@@ -172,6 +172,7 @@ class QnaSearch:
         doc_scores = self.bm25.get_scores(tokenized_query)
         #print(doc_scores) # array type
 
+        corpus = self.rawdata_q
         rs_list = self.bm25.get_top_n(tokenized_query, corpus, n=10)
         ret_str = '|'.join(rs_list)
         return ret_str

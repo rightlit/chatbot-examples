@@ -144,7 +144,7 @@ def query(query_str):
     
     cnt = 0
     ret_str = ''
-    ret_str = '[Q] + ' '.join(srch)
+    ret_str = '[Q]' + ' '.join(srch)
     for i in score.argsort()[::-1]:
         if score[i] > 0:
             print('{} / score : {}'.format(rawdata_q[i], score[i]))

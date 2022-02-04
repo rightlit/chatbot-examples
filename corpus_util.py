@@ -1,4 +1,10 @@
+import os
 import pandas as pd
+
+def file_log(s):
+    f = open('/tmp/flask.log', 'a')
+    f.write(str(s) + '\n')
+    f.close()
 
 def load_corpus_data(data_file):
 

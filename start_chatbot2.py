@@ -12,7 +12,11 @@ from QnaSearch import QnaSearch
 qna = QnaSearch()
 qna.load_corpus_data('/content/chatbot_faq_all.txt_new')
 qna.get_tfid_vector()
-    
+#ret_str = qna.search_query('대출연장')
+
+#qna.get_bm25_vector()
+#ret_str = qna.search_query_bm25('대출연장')
+
 #corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
 #vec, X_question, key_features = get_tfid_vector(corpus_data, question_data)
 

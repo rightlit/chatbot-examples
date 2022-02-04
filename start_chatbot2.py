@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 from corpus_util import load_corpus_data, get_tfid_vector
 
-corpus_data, rawdata_q = load_corpus_data('/content/chatbot_faq_all.txt_new')
-X_question = get_tfid_vector(corpus_data)
+corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
+X_question = get_tfid_vector(corpus_data, question_data)
 
 # HELLO
 @app.route('/hello')

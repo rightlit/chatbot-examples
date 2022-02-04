@@ -21,6 +21,7 @@ class QnaSearch:
         self.rawdata = [] 
         self.rawdata_q = []
         self.vectorize = None
+	self.bm25 = None
 
     # CORPUS 데이터 불러오기
     def load_corpus_data(self, data_file):
@@ -117,6 +118,6 @@ class QnaSearch:
         
        
 # 인스턴스 생성 
-qna = QnaSearch('/content/chatbot_faq_all.txt_new') 
+qna = QnaSearch() 
 # 메소드 호출 
-qna.load_corpus_data()
+qna.load_corpus_data('/content/chatbot_faq_all.txt_new')

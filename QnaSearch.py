@@ -21,6 +21,8 @@ class QnaSearch:
         #self.tokenizer = tokenizer 
         self.rawdata = [] 
         self.rawdata_q = []
+	self.X_question = []
+	self.features = []
         self.vectorize = None
         self.bm25 = None
 
@@ -75,39 +77,74 @@ class QnaSearch:
                 print(row)
 
         #return rawdata, rawdata_q
-        
+
+    def get_tfid_vector(self):
+
+        #rawdata = corpus_data
+        #rawdata_q = question_data
+	
+        ## TfidfVectorizer  방식으로 가중치를 주어서 Bow 를 만들다 
+        self.vectorize = TfidfVectorizer(
+            tokenizer=tokenizer,
+            min_df=2,
+            max_features=1000, #2048
+            sublinear_tf=True    # tf값에 1+log(tf)를 적용하여 tf값이 무한정 커지는 것을 막음
+        )
+        X = self.vectorize.fit_transform(self.rawdata)
+
+        #new_rawdata = []
+        #for row in rawdata:
+        #    new_rawdata.append(text_cleaning(row))
+        #X = vectorize.fit_transform(new_rawdata)
+    
+        print('fit_transform, (sentence {}, feature {})'.format(X.shape[0], X.shape[1]))    
+
+        # 문장에서 뽑아낸 feature 들의 배열
+        self.features = self.vectorize.get_feature_names()
+        #print(features)
+
+        #df_tfi = pd.DataFrame(X.toarray(), columns=self.features)
+        #print(df_tfi)
+
+        # 답변 문장으로 학습하고, 질문으로 유사도 비교
+        # transform 만 수행
+
+        print('TF-IDF vectorizing...')
+        #X_question = vectorize.fit_transform(self.rawdata)
+        self.X_question = self.vectorize.transform(self.rawdata_q)
+
+        #return vectorize, X_question, features
+	
+	
     # 유사문장 검색
     def search_query(self, query_str): 
-        print('')
-
-    def query(query_str):
         #query_str = '마이너스 통장 신청하려고 합니다'
-        features = key_features
-        vectorize = vec
+        #features = key_features
+        #vectorize = vec
     
-        srch=[t for t in tokenizer(query_str) if t in features]
+        srch=[t for t in tokenizer(query_str) if t in self.features]
         #print(srch)
         file_log(" ".join(srch))
     
         # dtm 에서 검색하고자 하는 feature만 뽑아낸다.
-        srch_dtm = np.asarray(X_question.toarray())[:, [
+        srch_dtm = np.asarray(self.X_question.toarray())[:, [
             # vectorize.vocabulary_.get 는 특정 feature 가 dtm 에서 가지고 있는 index값을 리턴한다
-            vectorize.vocabulary_.get(i) for i in srch
+            self.vectorize.vocabulary_.get(i) for i in srch
         ]]
 
         score = srch_dtm.sum(axis=1)
         #print(score)
         file_log('score:' + str(score))
     
-        rawdata_q = question_data
+        #rawdata_q = question_data
         cnt = 0
         ret_str = ''
         ret_str = '[Q]' + ' '.join(srch)
         for i in score.argsort()[::-1]:
             if score[i] > 0:
                 #print('{} / score : {}'.format(rawdata_q[i], score[i]))
-                file_log('{} / score : {}'.format(rawdata_q[i], score[i]))
-            ret_str = ret_str  + '|' + '{} / score : {}'.format(rawdata_q[i], score[i])
+                file_log('{} / score : {}'.format(self.rawdata_q[i], score[i]))
+            ret_str = ret_str  + '|' + '{} / score : {}'.format(self.rawdata_q[i], score[i])
 
             cnt = cnt + 1
             if(cnt > 10):
@@ -119,6 +156,6 @@ class QnaSearch:
         
        
 # 인스턴스 생성 
-qna = QnaSearch() 
+#qna = QnaSearch() 
 # 메소드 호출 
-qna.load_corpus_data('/content/chatbot_faq_all.txt_new')
+#qna.load_corpus_data('/content/chatbot_faq_all.txt_new')

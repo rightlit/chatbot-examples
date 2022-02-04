@@ -76,9 +76,10 @@ def tokenizer(raw, pos=["Noun","Alpha","Verb","Number"], stopword=[]):
             if len(word) > 1 and tag in pos and word not in stopword
         ]
 
-def get_tfid_vector(corpus_data):
+def get_tfid_vector(corpus_data, question_data):
 
     rawdata = corpus_data
+    rawdata_q = question_data
 	
     ## TfidfVectorizer  방식으로 가중치를 주어서 Bow 를 만들다 
     vectorize = TfidfVectorizer(

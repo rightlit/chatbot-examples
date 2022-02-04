@@ -11,6 +11,7 @@ from konlpy.tag import Twitter
 twitter = Twitter()
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, HashingVectorizer
 from sklearn.metrics.pairwise import linear_kernel, cosine_similarity 
+from rank_bm25 import BM25Okapi
 
 # 클래스 선언 
 class QnaSearch:

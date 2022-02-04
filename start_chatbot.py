@@ -155,7 +155,7 @@ def query(query_str):
             break
 
     print('retstr : ', ret_str)
-    return '[OK]' + retstr
+    return '[OK]' + ret_str
 
 # ready
 print('Chatbot Flask daemon Ready!!!')

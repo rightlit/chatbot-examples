@@ -70,7 +70,7 @@ class QnaSearch:
     
         #rawdata = []
         self.rawdata = list(rawdata_dic.keys())
-        for i, row in enumerate(rawdata):
+        for i, row in enumerate(self.rawdata):
             if(i < 5):
                 print(row)
 

@@ -147,7 +147,7 @@ def query(query_str):
     for i in score.argsort()[::-1]:
         if score[i] > 0:
             print('{} / score : {}'.format(rawdata_q[i], score[i]))
-        if(i == 0):
+        if(cnt == 0):
             ret_str = '{} / score : {}'.format(rawdata_q[i], score[i])
 
         cnt = cnt + 1

@@ -1,5 +1,5 @@
 # 유틸함수
-from chatbot.corpus_util import tokenizer, file_log
+from corpus_util import tokenizer, file_log
 
 import pandas as pd
 pd.options.mode.chained_assignment = None

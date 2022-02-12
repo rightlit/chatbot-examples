@@ -11,10 +11,10 @@ import numpy as np
 
 qna = QnaSearch()
 qna.load_corpus_data('/content/chatbot_faq_all.txt_new')
-qna.get_tfid_vector()
+#qna.get_tfid_vector()
 #ret_str = qna.search_query('대출연장')
 
-#qna.get_bm25_vector()
+qna.get_bm25_tfid_vector()
 #ret_str = qna.search_query_bm25('대출연장')
 
 #corpus_data, question_data = load_corpus_data('/content/chatbot_faq_all.txt_new')
@@ -39,7 +39,8 @@ def boards(page):
 # QUERY sample
 @app.route('/query/<query_str>')
 def query(query_str):
-    ret_str = qna.search_query(query_str)
+    #ret_str = qna.search_query(query_str)
+    ret_str = qna.search_query_bm25(query_str)
     
     return ret_str
 

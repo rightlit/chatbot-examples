@@ -222,7 +222,7 @@ class QnaSearch:
         score = X_score
         cnt = 0
         ret_str = ''
-        ret_str = '[Q]' + ' '.join(srch)
+        ret_str = '[Q]' + query_str
         for i in score.argsort()[::-1]:
             if score[i] > 0:
                 #print('{} / score : {}'.format(rawdata_q[i], score[i]))

@@ -202,7 +202,7 @@ class QnaSearch:
         #X = super(TfidfVectorizer, self.vectorizer).transform(X)
         X = self.X_
         len_X = X.sum(1).A1
-        q, = super(TfidfVectorizer, self.vectorizer).transform([q])
+        q, = super(TfidfVectorizer, self.vectorize).transform([q])
         assert sparse.isspmatrix_csr(q)
 
         # convert to csc for better column slicing

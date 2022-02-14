@@ -44,8 +44,8 @@ def query(query_str):
     return ret_str
 
 # QUERY sample (BM25)
-@app.route('/query_bm25/<query_str>')
-def query(query_str):
+@app.route('/query2/<query_str>')
+def query2(query_str):
     #ret_str = qna.search_query(query_str)
     ret_str = qna.search_query_bm25(query_str)
     

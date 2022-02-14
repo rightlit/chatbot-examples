@@ -24,7 +24,8 @@ class QnaSearch:
         self.rawdata_q = []
         self.X_question = []
         self.features = []
-        self.vectorize = None
+        self.vectorize = None   # TFIDF
+        self.vectorizer = None  # BM25
         # BM25
         self.bm25 = None
         self.b = 0.75
@@ -183,15 +184,15 @@ class QnaSearch:
 
     # BM25 벡터화
     def get_bm25_tfid_vector(self):
-        self.vectorize = TfidfVectorizer(
+        self.vectorizer = TfidfVectorizer(
             tokenizer=tokenizer,
             min_df=2,
             max_features=1000, #2048
             sublinear_tf=True    # tf값에 1+log(tf)를 적용하여 tf값이 무한정 커지는 것을 막음
         )
-        self.vectorize.fit(self.rawdata_q)
+        self.vectorizer.fit(self.rawdata_q)
         #y = super(TfidfVectorizer, self.vectorizer).transform(X)
-        self.X_ = super(TfidfVectorizer, self.vectorize).transform(self.rawdata_q)
+        self.X_ = super(TfidfVectorizer, self.vectorizer).transform(self.rawdata_q)
         self.avdl = self.X_.sum(1).mean()
  
     def bm25_tfid_transform(self, q):
@@ -202,7 +203,7 @@ class QnaSearch:
         #X = super(TfidfVectorizer, self.vectorizer).transform(X)
         X = self.X_
         len_X = X.sum(1).A1
-        q, = super(TfidfVectorizer, self.vectorize).transform([q])
+        q, = super(TfidfVectorizer, self.vectorizer).transform([q])
         assert sparse.isspmatrix_csr(q)
 
         # convert to csc for better column slicing
@@ -210,7 +211,7 @@ class QnaSearch:
         denom = X + (k1 * (1 - b + b * len_X / avdl))[:, None]
         # idf(t) = log [ n / df(t) ] + 1 in sklearn, so it need to be coneverted
         # to idf(t) = log [ n / df(t) ] with minus 1
-        idf = self.vectorize._tfidf.idf_[None, q.indices] - 1.
+        idf = self.vectorizer._tfidf.idf_[None, q.indices] - 1.
         numer = X.multiply(np.broadcast_to(idf, X.shape)) * (k1 + 1)                                                          
         return (numer / denom).sum(1).A1
 

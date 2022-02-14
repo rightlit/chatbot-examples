@@ -24,8 +24,8 @@ class QnaSearch:
         self.rawdata_q = []
         self.X_question = []
         self.features = []
-        self.vectorize = None   # TFIDF
-        self.vectorizer = None  # BM25
+        self.vectorizer = None   # TFIDF
+        self.vectorizer2 = None  # BM25
         # BM25
         self.bm25 = None
         self.b = 0.75
@@ -92,23 +92,18 @@ class QnaSearch:
         #rawdata_q = question_data
 	
         ## TfidfVectorizer  방식으로 가중치를 주어서 Bow 를 만들다 
-        self.vectorize = TfidfVectorizer(
+        self.vectorizer = TfidfVectorizer(
             tokenizer=tokenizer,
             min_df=2,
             max_features=1000, #2048
             sublinear_tf=True    # tf값에 1+log(tf)를 적용하여 tf값이 무한정 커지는 것을 막음
         )
-        X = self.vectorize.fit_transform(self.rawdata)
+        X = self.vectorizer.fit_transform(self.rawdata)
 
-        #new_rawdata = []
-        #for row in rawdata:
-        #    new_rawdata.append(text_cleaning(row))
-        #X = vectorize.fit_transform(new_rawdata)
-    
         print('fit_transform, (sentence {}, feature {})'.format(X.shape[0], X.shape[1]))    
 
         # 문장에서 뽑아낸 feature 들의 배열
-        self.features = self.vectorize.get_feature_names()
+        self.features = self.vectorizer.get_feature_names()
         #print(features)
 
         #df_tfi = pd.DataFrame(X.toarray(), columns=self.features)
@@ -118,18 +113,14 @@ class QnaSearch:
         # transform 만 수행
 
         print('TF-IDF vectorizing...')
-        #X_question = vectorize.fit_transform(self.rawdata)
-        self.X_question = self.vectorize.transform(self.rawdata_q)
+        self.X_question = self.vectorizer.transform(self.rawdata_q)
 
         #return vectorize, X_question, features
 	
 	
     # 유사문장 검색
     def search_query(self, query_str): 
-        #query_str = '마이너스 통장 신청하려고 합니다'
-        #features = key_features
-        #vectorize = vec
-    
+   
         srch=[t for t in tokenizer(query_str) if t in self.features]
         #print(srch)
         file_log(" ".join(srch))
@@ -137,7 +128,7 @@ class QnaSearch:
         # dtm 에서 검색하고자 하는 feature만 뽑아낸다.
         srch_dtm = np.asarray(self.X_question.toarray())[:, [
             # vectorize.vocabulary_.get 는 특정 feature 가 dtm 에서 가지고 있는 index값을 리턴한다
-            self.vectorize.vocabulary_.get(i) for i in srch
+            self.vectorizer.vocabulary_.get(i) for i in srch
         ]]
 
         score = srch_dtm.sum(axis=1)
@@ -184,15 +175,14 @@ class QnaSearch:
 
     # BM25 벡터화
     def get_bm25_tfid_vector(self):
-        self.vectorizer = TfidfVectorizer(
+        self.vectorizer2 = TfidfVectorizer(
             tokenizer=tokenizer,
             min_df=2,
             max_features=1000, #2048
             sublinear_tf=True    # tf값에 1+log(tf)를 적용하여 tf값이 무한정 커지는 것을 막음
         )
-        self.vectorizer.fit(self.rawdata_q)
-        #y = super(TfidfVectorizer, self.vectorizer).transform(X)
-        self.X_ = super(TfidfVectorizer, self.vectorizer).transform(self.rawdata_q)
+        self.vectorizer2.fit(self.rawdata_q)
+        self.X_ = super(TfidfVectorizer, self.vectorizer2).transform(self.rawdata_q)
         self.avdl = self.X_.sum(1).mean()
  
     def bm25_tfid_transform(self, q):
@@ -200,10 +190,9 @@ class QnaSearch:
         b, k1, avdl = self.b, self.k1, self.avdl
 
         # apply CountVectorizer
-        #X = super(TfidfVectorizer, self.vectorizer).transform(X)
         X = self.X_
         len_X = X.sum(1).A1
-        q, = super(TfidfVectorizer, self.vectorizer).transform([q])
+        q, = super(TfidfVectorizer, self.vectorizer2).transform([q])
         assert sparse.isspmatrix_csr(q)
 
         # convert to csc for better column slicing
@@ -211,7 +200,7 @@ class QnaSearch:
         denom = X + (k1 * (1 - b + b * len_X / avdl))[:, None]
         # idf(t) = log [ n / df(t) ] + 1 in sklearn, so it need to be coneverted
         # to idf(t) = log [ n / df(t) ] with minus 1
-        idf = self.vectorizer._tfidf.idf_[None, q.indices] - 1.
+        idf = self.vectorizer2._tfidf.idf_[None, q.indices] - 1.
         numer = X.multiply(np.broadcast_to(idf, X.shape)) * (k1 + 1)                                                          
         return (numer / denom).sum(1).A1
 
